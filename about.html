@@ -931,24 +931,37 @@
             </a>
 
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html" >area710</a></li>
+                <li><a href="index.html">area710</a></li>
                 <li class="has-submenu">
-    <a href="raueme.html">Räume</a>
-    <ul class="submenu">
-        <li><a href="raueme.html#hall">Hall</a></li>
-        <li><a href="raueme.html#lab">Lab</a></li>
-        <li><a href="raueme.html#barclub">Bar & Club</a></li>
-        <li><a href="raueme.html#outdoor">Outdoor</a></li>
-    </ul>
-</li>
+                    <a href="raueme.html" class="lang-de">Räume</a>
+                    <a href="raueme.html" class="lang-en" style="display:none;">Rooms</a>
+                    <ul class="submenu">
+                        <li><a href="raueme.html#hall">Hall</a></li>
+                        <li><a href="raueme.html#lab">Lab</a></li>
+                        <li><a href="raueme.html#barclub">Bar & Club</a></li>
+                        <li><a href="raueme.html#outdoor">Outdoor</a></li>
+                    </ul>
+                </li>
                 <li><a href="events.html">Events</a></li>
-                <li><a href="gallery.html">Galerie</a></li>
-                <li><a href="about.html" class="active">Über Uns</a></li>
-                <li><a href="booking.html">Buchungsanfrage</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li>
+                    <a href="gallery.html" class="lang-de">Galerie</a>
+                    <a href="gallery.html" class="lang-en" style="display:none;">Gallery</a>
+                </li>
+                <li>
+                    <a href="about.html" class="lang-de active">Über Uns</a>
+                    <a href="about.html" class="lang-en active" style="display:none;">About Us</a>
+                </li>
+                <li>
+                    <a href="booking.html" class="lang-de">Buchungsanfrage</a>
+                    <a href="booking.html" class="lang-en" style="display:none;">Booking Request</a>
+                </li>
+                <li>
+                    <a href="contact.html" class="lang-de">Kontakt</a>
+                    <a href="contact.html" class="lang-en" style="display:none;">Contact</a>
+                </li>
 
                 <div class="lang-switch">
-                    <button class="lang-btn active" data-lang="de">DE</button>
+                    <button class="lang-btn" class="active" data-lang="de">DE</button>
                     <button class="lang-btn" data-lang="en">EN</button>
                 </div>
             </ul>
@@ -965,8 +978,10 @@
         <div class="hero-bg"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 data-de="Über area710" data-en="About area710">Über area710</h1>
-            <p data-de="Leidenschaft für außergewöhnliche Events seit [JAHR]" data-en="Passion for exceptional events since [YEAR]">Leidenschaft für außergewöhnliche Events seit [JAHR]</p>
+            <h1 class="lang-de">Über area710</h1>
+            <h1 class="lang-en" style="display:none;">About area710</h1>
+            <p class="lang-de">Leidenschaft für außergewöhnliche Events seit [JAHR]</p>
+            <p class="lang-en" style="display:none;">Passion for exceptional events since [YEAR]</p>
         </div>
     </section>
 
@@ -975,19 +990,25 @@
         <div class="container">
             <div class="story-section">
                 <div class="story-content">
-                    <h2 data-de="Unsere Geschichte" data-en="Our Story">Unsere Geschichte</h2>
-                    <p data-de="[PLATZHALTER: Beschreiben Sie hier die Entstehungsgeschichte von area710. Wie hat alles angefangen? Was war die ursprüngliche Vision? Welche Herausforderungen wurden gemeistert?]"
-                       data-en="[PLACEHOLDER: Describe the origin story of area710. How did it all start? What was the original vision? What challenges were overcome?]">
+                    <h2 class="lang-de">Unsere Geschichte</h2>
+                    <h2 class="lang-en" style="display:none;">Our Story</h2>
+                    <p class="lang-de">
                         [PLATZHALTER: Beschreiben Sie hier die Entstehungsgeschichte von area710. Wie hat alles angefangen? Was war die ursprüngliche Vision? Welche Herausforderungen wurden gemeistert?]
                     </p>
-                    <p data-de="[PLATZHALTER: Was macht area710 einzigartig? Welche Philosophie steht hinter der Location? Was sind die wichtigsten Meilensteine?]"
-                       data-en="[PLACEHOLDER: What makes area710 unique? What philosophy is behind the location? What are the most important milestones?]">
+                    <p class="lang-en" style="display:none;">
+                        [PLACEHOLDER: Describe the origin story of area710. How did it all start? What was the original vision? What challenges were overcome?]
+                    </p>
+                    <p class="lang-de">
                         [PLATZHALTER: Was macht area710 einzigartig? Welche Philosophie steht hinter der Location? Was sind die wichtigsten Meilensteine?]
+                    </p>
+                    <p class="lang-en" style="display:none;">
+                        [PLACEHOLDER: What makes area710 unique? What philosophy is behind the location? What are the most important milestones?]
                     </p>
                 </div>
                 <div class="story-image">
                     <img src="images/hall-p.jpg" alt="area710 Geschichte">
-                    <div class="placeholder-text">[BILD: Historisches Foto oder Team-Foto]</div>
+                    <div class="placeholder-text lang-de">[BILD: Historisches Foto oder Team-Foto]</div>
+                    <div class="placeholder-text lang-en" style="display:none;">[IMAGE: Historical photo or team photo]</div>
                 </div>
             </div>
         </div>
@@ -997,37 +1018,47 @@
     <section class="section" style="background: var(--gray); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
         <div class="container">
             <div class="section-header">
-                <h2 data-de="Unsere Werte" data-en="Our Values">Unsere Werte</h2>
-                <p data-de="Was uns antreibt und auszeichnet" data-en="What drives and distinguishes us">Was uns antreibt und auszeichnet</p>
+                <h2 class="lang-de">Unsere Werte</h2>
+                <h2 class="lang-en" style="display:none;">Our Values</h2>
+                <p class="lang-de">Was uns antreibt und auszeichnet</p>
+                <p class="lang-en" style="display:none;">What drives and distinguishes us</p>
             </div>
 
             <div class="features-grid">
                 <div class="feature-box">
                     <img src="img/exoerience.jpg" alt="experience" class="feature-image" style="--frame-color: var(--orange);">
                     <h3>experience</h3>
-                    <p data-de="Ob im Businessbereich oder Privat, ob in großem Stile oder klein und fein, Erlebnisse aller Art werden in der unverwechselbaren area710 perfekt realisiert" data-en="Whether in the business or private sector, whether on a large scale or small and fine, experiences of all kinds are perfectly realized in the distinctive area710">
+                    <p class="lang-de">
                      Ob im Businessbereich oder Privat, ob in großem Stile oder klein und fein, Erlebnisse aller Art werden in der unverwechselbaren area710 perfekt realisiert
                     </p>
-                </div>
-
-                <div class="feature-box">
-                    <img src="img/multi-functional.jpg" alt="experience" class="feature-image" style="--frame-color: var(--red);">
-                    <h3>multi-functional</h3>
-                    <p data-de="Flexibilität, die wir mit unseren verschiedenen Raumkonstellationen vorweisen können, machen deren Funktionalität grenzenlos" data-en="The high degree of flexibility that we can offer with our various room constellations makes their functionality limitless">
-                        Flexibilität, die wir mit unseren verschiedenen Raumkonstellationen vorweisen können, machen deren Funktionalität grenzenlos
+                    <p class="lang-en" style="display:none;">
+                     Whether in the business or private sector, whether on a large scale or small and fine, experiences of all kinds are perfectly realized in the distinctive area710
                     </p>
                 </div>
 
                 <div class="feature-box">
-                    <img src="img/full-service.jpg" alt="experience" class="feature-image" style="--frame-color: var(--blue);">
-                    <h3>full-service</h3>
-                    <p data-de="Das Team der area710 steht für einen außergewöhnlichen Service-Gedanken. Historisch aus dem Event- und Messegeschäft kommend, werden hier ausgefallenste Wünsche wahr" data-en="The area710 team stands for an exceptional service concept. Historically coming from the event and trade fair business, the most unusual wishes come true here">Das Team der area710 steht für einen außergewöhnlichen Service-Gedanken. Historisch aus dem Event- und Messegeschäft kommend, werden hier ausgefallenste Wünsche wahr</p>
+                    <img src="img/multi-functional.jpg" alt="multi-functional" class="feature-image" style="--frame-color: var(--red);">
+                    <h3>multi-functional</h3>
+                    <p class="lang-de">
+                        Flexibilität, die wir mit unseren verschiedenen Raumkonstellationen vorweisen können, machen deren Funktionalität grenzenlos
+                    </p>
+                    <p class="lang-en" style="display:none;">
+                        The high degree of flexibility that we can offer with our various room constellations makes their functionality limitless
+                    </p>
                 </div>
 
                 <div class="feature-box">
-                    <img src="img/magic.jpg" alt="experience" class="feature-image" style="--frame-color: var(--green);">
+                    <img src="img/full-service.jpg" alt="full-service" class="feature-image" style="--frame-color: var(--blue);">
+                    <h3>full-service</h3>
+                    <p class="lang-de">Das Team der area710 steht für einen außergewöhnlichen Service-Gedanken. Historisch aus dem Event- und Messegeschäft kommend, werden hier ausgefallenste Wünsche wahr</p>
+                    <p class="lang-en" style="display:none;">The area710 team stands for an exceptional service concept. Historically coming from the event and trade fair business, the most unusual wishes come true here</p>
+                </div>
+
+                <div class="feature-box">
+                    <img src="img/magic.jpg" alt="magic" class="feature-image" style="--frame-color: var(--green);">
                     <h3>magic</h3>
-                    <p data-de="Entdecken Sie die magische Welt unterschiedlichster Veranstaltungsformate. Gerne zeigen wir Ihnen die Räumlichkeiten und deren Baukastensystem vor Ort" data-en="Discover the magical world of different event formats. We would be happy to show you the rooms and their modular system on site">Entdecken Sie die magische Welt unterschiedlichster Veranstaltungsformate. Gerne zeigen wir Ihnen die Räumlichkeiten und deren Baukastensystem vor Ort</p>
+                    <p class="lang-de">Entdecken Sie die magische Welt unterschiedlichster Veranstaltungsformate. Gerne zeigen wir Ihnen die Räumlichkeiten und deren Baukastensystem vor Ort</p>
+                    <p class="lang-en" style="display:none;">Discover the magical world of different event formats. We would be happy to show you the rooms and their modular system on site</p>
                 </div>
             </div>
 
@@ -1039,19 +1070,23 @@
         <div class="stats-grid">
             <div class="stat-item">
                 <div class="stat-number">[XXX]</div>
-                <div class="stat-label" data-de="Events pro Jahr" data-en="Events per Year">Events pro Jahr</div>
+                <div class="stat-label lang-de">Events pro Jahr</div>
+                <div class="stat-label lang-en" style="display:none;">Events per Year</div>
             </div>
             <div class="stat-item">
                 <div class="stat-number">[XXX]</div>
-                <div class="stat-label" data-de="Quadratmeter" data-en="Square Meters">Quadratmeter</div>
+                <div class="stat-label lang-de">Quadratmeter</div>
+                <div class="stat-label lang-en" style="display:none;">Square Meters</div>
             </div>
             <div class="stat-item">
                 <div class="stat-number">[XXX]</div>
-                <div class="stat-label" data-de="Zufriedene Kunden" data-en="Happy Clients">Zufriedene Kunden</div>
+                <div class="stat-label lang-de">Zufriedene Kunden</div>
+                <div class="stat-label lang-en" style="display:none;">Happy Clients</div>
             </div>
             <div class="stat-item">
                 <div class="stat-number">[XXX]</div>
-                <div class="stat-label" data-de="Jahre Erfahrung" data-en="Years Experience">Jahre Erfahrung</div>
+                <div class="stat-label lang-de">Jahre Erfahrung</div>
+                <div class="stat-label lang-en" style="display:none;">Years Experience</div>
             </div>
         </div>
     </section>
@@ -1060,47 +1095,57 @@
     <section class="section">
         <div class="container">
             <div class="section-header section-header-blue">
-    <h2 data-de="Unsere Reise" data-en="Our Journey">Unsere Reise</h2>
-    <p data-de="Die wichtigsten Meilensteine" data-en="The most important milestones">Die wichtigsten Meilensteine</p>
-</div>
+                <h2 class="lang-de">Unsere Reise</h2>
+                <h2 class="lang-en" style="display:none;">Our Journey</h2>
+                <p class="lang-de">Die wichtigsten Meilensteine</p>
+                <p class="lang-en" style="display:none;">The most important milestones</p>
+            </div>
 
             <div class="timeline">
-    <div class="timeline-item">
-        <div class="timeline-content">
-            <div class="timeline-year timeline-year-orange">2020</div>
-            <h3 class="timeline-title">Meilenstein 1</h3>
-            <p class="timeline-text">Beschreibung Meilenstein 1</p>
-        </div>
-        <div class="timeline-dot timeline-dot-orange"></div>
-    </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year timeline-year-orange">2020</div>
+                        <h3 class="timeline-title lang-de">Meilenstein 1</h3>
+                        <h3 class="timeline-title lang-en" style="display:none;">Milestone 1</h3>
+                        <p class="timeline-text lang-de">Beschreibung Meilenstein 1</p>
+                        <p class="timeline-text lang-en" style="display:none;">Description Milestone 1</p>
+                    </div>
+                    <div class="timeline-dot timeline-dot-orange"></div>
+                </div>
 
-    <div class="timeline-item">
-        <div class="timeline-content">
-            <div class="timeline-year timeline-year-red">2021</div>
-            <h3 class="timeline-title">Meilenstein 2</h3>
-            <p class="timeline-text">Beschreibung Meilenstein 2</p>
-        </div>
-        <div class="timeline-dot timeline-dot-red"></div>
-    </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year timeline-year-red">2021</div>
+                        <h3 class="timeline-title lang-de">Meilenstein 2</h3>
+                        <h3 class="timeline-title lang-en" style="display:none;">Milestone 2</h3>
+                        <p class="timeline-text lang-de">Beschreibung Meilenstein 2</p>
+                        <p class="timeline-text lang-en" style="display:none;">Description Milestone 2</p>
+                    </div>
+                    <div class="timeline-dot timeline-dot-red"></div>
+                </div>
 
-    <div class="timeline-item">
-        <div class="timeline-content">
-            <div class="timeline-year timeline-year-blue">2022</div>
-            <h3 class="timeline-title">Meilenstein 3</h3>
-            <p class="timeline-text">Beschreibung Meilenstein 3</p>
-        </div>
-        <div class="timeline-dot timeline-dot-blue"></div>
-    </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year timeline-year-blue">2022</div>
+                        <h3 class="timeline-title lang-de">Meilenstein 3</h3>
+                        <h3 class="timeline-title lang-en" style="display:none;">Milestone 3</h3>
+                        <p class="timeline-text lang-de">Beschreibung Meilenstein 3</p>
+                        <p class="timeline-text lang-en" style="display:none;">Description Milestone 3</p>
+                    </div>
+                    <div class="timeline-dot timeline-dot-blue"></div>
+                </div>
 
-    <div class="timeline-item">
-        <div class="timeline-content">
-            <div class="timeline-year timeline-year-green">2023</div>
-            <h3 class="timeline-title">Meilenstein 4</h3>
-            <p class="timeline-text">Beschreibung Meilenstein 4</p>
-        </div>
-        <div class="timeline-dot timeline-dot-green"></div>
-    </div>
-</div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-year timeline-year-green">2023</div>
+                        <h3 class="timeline-title lang-de">Meilenstein 4</h3>
+                        <h3 class="timeline-title lang-en" style="display:none;">Milestone 4</h3>
+                        <p class="timeline-text lang-de">Beschreibung Meilenstein 4</p>
+                        <p class="timeline-text lang-en" style="display:none;">Description Milestone 4</p>
+                    </div>
+                    <div class="timeline-dot timeline-dot-green"></div>
+                </div>
+            </div>
 
         </div>
     </section>
@@ -1109,22 +1154,28 @@
     <section class="section" style="background: var(--gray); border-top: 1px solid var(--border);">
         <div class="container">
             <div class="section-header section-header-green">
-    <h2 data-de="Unser Team" data-en="Our Team">Unser Team</h2>
-    <p data-de="Die Menschen hinter area710" data-en="The people behind area710">Die Menschen hinter area710</p>
-</div>
+                <h2 class="lang-de">Unser Team</h2>
+                <h2 class="lang-en" style="display:none;">Our Team</h2>
+                <p class="lang-de">Die Menschen hinter area710</p>
+                <p class="lang-en" style="display:none;">The people behind area710</p>
+            </div>
 
 
             <div class="team-grid">
                 <div class="team-member">
                     <div class="team-photo">
                         <img src="images/team-placeholder.jpg" alt="Team Member">
-                        <div class="placeholder-text">[FOTO: Team-Mitglied 1]</div>
+                        <div class="placeholder-text lang-de">[FOTO: Team-Mitglied 1]</div>
+                        <div class="placeholder-text lang-en" style="display:none;">[PHOTO: Team Member 1]</div>
                     </div>
                     <div class="team-info">
                         <h3 class="team-name">[NAME]</h3>
-                        <div class="team-role" data-de="[POSITION]" data-en="[POSITION]">[POSITION]</div>
-                        <p class="team-bio" data-de="[PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]" data-en="[PLACEHOLDER: Short biography, responsibilities, special features]">
+                        <div class="team-role">[POSITION]</div>
+                        <p class="team-bio lang-de">
                             [PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]
+                        </p>
+                        <p class="team-bio lang-en" style="display:none;">
+                            [PLACEHOLDER: Short biography, responsibilities, special features]
                         </p>
                     </div>
                 </div>
@@ -1132,13 +1183,17 @@
                 <div class="team-member">
                     <div class="team-photo">
                         <img src="images/team-placeholder.jpg" alt="Team Member">
-                        <div class="placeholder-text">[FOTO: Team-Mitglied 2]</div>
+                        <div class="placeholder-text lang-de">[FOTO: Team-Mitglied 2]</div>
+                        <div class="placeholder-text lang-en" style="display:none;">[PHOTO: Team Member 2]</div>
                     </div>
                     <div class="team-info">
                         <h3 class="team-name">[NAME]</h3>
-                        <div class="team-role" data-de="[POSITION]" data-en="[POSITION]">[POSITION]</div>
-                        <p class="team-bio" data-de="[PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]" data-en="[PLACEHOLDER: Short biography, responsibilities, special features]">
+                        <div class="team-role">[POSITION]</div>
+                        <p class="team-bio lang-de">
                             [PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]
+                        </p>
+                        <p class="team-bio lang-en" style="display:none;">
+                            [PLACEHOLDER: Short biography, responsibilities, special features]
                         </p>
                     </div>
                 </div>
@@ -1146,13 +1201,17 @@
                 <div class="team-member">
                     <div class="team-photo">
                         <img src="images/team-placeholder.jpg" alt="Team Member">
-                        <div class="placeholder-text">[FOTO: Team-Mitglied 3]</div>
+                        <div class="placeholder-text lang-de">[FOTO: Team-Mitglied 3]</div>
+                        <div class="placeholder-text lang-en" style="display:none;">[PHOTO: Team Member 3]</div>
                     </div>
                     <div class="team-info">
                         <h3 class="team-name">[NAME]</h3>
-                        <div class="team-role" data-de="[POSITION]" data-en="[POSITION]">[POSITION]</div>
-                        <p class="team-bio" data-de="[PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]" data-en="[PLACEHOLDER: Short biography, responsibilities, special features]">
+                        <div class="team-role">[POSITION]</div>
+                        <p class="team-bio lang-de">
                             [PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]
+                        </p>
+                        <p class="team-bio lang-en" style="display:none;">
+                            [PLACEHOLDER: Short biography, responsibilities, special features]
                         </p>
                     </div>
                 </div>
@@ -1160,13 +1219,17 @@
                 <div class="team-member">
                     <div class="team-photo">
                         <img src="images/team-placeholder.jpg" alt="Team Member">
-                        <div class="placeholder-text">[FOTO: Team-Mitglied 4]</div>
+                        <div class="placeholder-text lang-de">[FOTO: Team-Mitglied 4]</div>
+                        <div class="placeholder-text lang-en" style="display:none;">[PHOTO: Team Member 4]</div>
                     </div>
                     <div class="team-info">
                         <h3 class="team-name">[NAME]</h3>
-                        <div class="team-role" data-de="[POSITION]" data-en="[POSITION]">[POSITION]</div>
-                        <p class="team-bio" data-de="[PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]" data-en="[PLACEHOLDER: Short biography, responsibilities, special features]">
+                        <div class="team-role">[POSITION]</div>
+                        <p class="team-bio lang-de">
                             [PLATZHALTER: Kurze Biografie, Aufgabenbereiche, Besonderheiten]
+                        </p>
+                        <p class="team-bio lang-en" style="display:none;">
+                            [PLACEHOLDER: Short biography, responsibilities, special features]
                         </p>
                     </div>
                 </div>
@@ -1177,11 +1240,15 @@
     <!-- CTA -->
     <section class="cta-section">
         <div class="container">
-            <h2 data-de="Bereit für Ihr Event?" data-en="Ready for Your Event?">Bereit für Ihr Event?</h2>
-            <p data-de="Lassen Sie uns gemeinsam etwas Außergewöhnliches schaffen" data-en="Let's create something extraordinary together">Lassen Sie uns gemeinsam etwas Außergewöhnliches schaffen</p>
+            <h2 class="lang-de">Bereit für Ihr Event?</h2>
+            <h2 class="lang-en" style="display:none;">Ready for Your Event?</h2>
+            <p class="lang-de">Lassen Sie uns gemeinsam etwas Außergewöhnliches schaffen</p>
+            <p class="lang-en" style="display:none;">Let's create something extraordinary together</p>
             <div class="cta-buttons">
-                <a href="booking.html" class="btn btn-primary" data-de="Jetzt Anfragen" data-en="Request Now">Jetzt Anfragen</a>
-                <a href="contact.html" class="btn btn-secondary" data-de="Kontakt Aufnehmen" data-en="Get in Touch">Kontakt Aufnehmen</a>
+                <a href="booking.html" class="btn btn-primary lang-de">Jetzt Anfragen</a>
+                <a href="booking.html" class="btn btn-primary lang-en" style="display:none;">Request Now</a>
+                <a href="contact.html" class="btn btn-secondary lang-de">Kontakt Aufnehmen</a>
+                <a href="contact.html" class="btn btn-secondary lang-en" style="display:none;">Get in Touch</a>
             </div>
         </div>
     </section>
@@ -1195,19 +1262,23 @@
             </div>
 
             <div class="footer-section">
-                <h3 data-de="Öffnungszeiten Eventbüro" data-en="Office Hours">Öffnungszeiten Eventbüro</h3>
-                <p data-de="Montag–Freitag" data-en="Monday–Friday">Montag–Freitag</p>
-                <p>10:00–18:00 Uhr</p>
+                <h3 class="lang-de">Öffnungszeiten Eventbüro</h3>
+                <h3 class="lang-en" style="display:none;">Office Hours</h3>
+                <p class="lang-de">Montag–Freitag</p>
+                <p class="lang-en" style="display:none;">Monday–Friday</p>
+                <p>10:00–18:00 <span class="lang-de">Uhr</span></p>
             </div>
 
             <div class="footer-section">
-                <h3 data-de="Kontakt" data-en="Contact">Kontakt</h3>
+                <h3 class="lang-de">Kontakt</h3>
+                <h3 class="lang-en" style="display:none;">Contact</h3>
                 <p><a href="tel:+4970314107311">+49 7031 41073-11</a></p>
                 <p><a href="mailto:info@area710.de">info@area710.de</a></p>
             </div>
 
             <div class="footer-section">
-                <h3 data-de="Folge uns" data-en="Follow us">Folge uns</h3>
+                <h3 class="lang-de">Folge uns</h3>
+                <h3 class="lang-en" style="display:none;">Follow us</h3>
                 <div class="social-links">
                     <a href="https://www.facebook.com/profile.php?id=100086162780846" class="social-link" target="_blank">
                         <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -1223,18 +1294,66 @@
         </div>
 
         <div class="footer-bottom">
-            <p>
+            <p class="lang-de">
                 area710 eine Marke der seeeye Werbung & Event GmbH
                 <br>
-                <a href="impressum.html" data-de="Impressum" data-en="Imprint">Impressum</a>
-                <a href="datenschutz.html" data-de="Datenschutzerklärung" data-en="Privacy Policy">Datenschutzerklärung</a>
-                <a href="booking.html" data-de="Buchungsanfrage" data-en="Booking Request">Buchungsanfrage</a>
-                <a href="https://ticket.area710.de" target="_blank" data-de="Ticket Verkauf" data-en="Ticket Sales">Ticket Verkauf</a>
+                <a href="impressum.html">Impressum</a>
+                <a href="datenschutz.html">Datenschutzerklärung</a>
+                <a href="booking.html">Buchungsanfrage</a>
+                <a href="https://ticket.area710.de" target="_blank">Ticket Verkauf</a>
+            </p>
+            <p class="lang-en" style="display:none;">
+                area710 a brand of seeeye Werbung & Event GmbH
+                <br>
+                <a href="impressum.html">Legal Notice</a>
+                <a href="datenschutz.html">Privacy Policy</a>
+                <a href="booking.html">Booking Request</a>
+                <a href="https://ticket.area710.de" target="_blank">Ticket Sales</a>
             </p>
         </div>
     </footer>
 
     <script>
+        // LANGUAGE SWITCHING
+        const langBtns = document.querySelectorAll('.lang-btn');
+
+        function setLanguage(lang) {
+            // Update buttons
+            langBtns.forEach(btn => {
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update all lang-specific elements
+            document.querySelectorAll('.lang-de, .lang-en').forEach(el => {
+                if (el.classList.contains(`lang-${lang}`)) {
+                    el.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+
+            // Update document language
+            document.documentElement.lang = lang;
+
+            // Store preference
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // Add click listeners
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setLanguage(btn.dataset.lang);
+            });
+        });
+
+        // Load saved language or default to DE
+        const savedLang = localStorage.getItem('preferred-language') || 'de';
+        setLanguage(savedLang);
+
         // MOBILE MENU
         document.getElementById('mobileToggle').addEventListener('click', function() {
             document.getElementById('navMenu').classList.toggle('active');
@@ -1255,36 +1374,6 @@
                 header.classList.remove('scrolled');
             }
         });
-
-        document.querySelectorAll('.section-title, .vision-text, .feature-box, .room-nav-item, .room-card').forEach(el => {
-            observer.observe(el);
-        });
-
-        // LANGUAGE SWITCHER
-        let currentLang = 'de';
-
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const targetLang = this.dataset.lang;
-                if (targetLang === currentLang) return;
-
-                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentLang = targetLang;
-                translatePage(targetLang);
-            });
-        });
-
-        function translatePage(lang) {
-            document.querySelectorAll('[data-de]').forEach(el => {
-                if (lang === 'de' && el.dataset.de) {
-                    el.textContent = el.dataset.de;
-                } else if (lang === 'en' && el.dataset.en) {
-                    el.textContent = el.dataset.en;
-                }
-            });
-            document.documentElement.lang = lang;
-        }
     </script>
 
 </body>

@@ -268,6 +268,16 @@
             border-bottom: 1px solid var(--border);
         }
 
+        .legal-section h4 {
+            color: var(--orange);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .legal-section h4:not(:first-of-type) {
+            margin-top: 2rem;
+        }
+
         .legal-section p {
             margin-bottom: 1.2rem;
             color: rgba(255,255,255,0.85);
@@ -417,6 +427,15 @@
             opacity: 0.7;
         }
 
+        /* Language Toggle */
+        .lang-content {
+            display: none;
+        }
+
+        .lang-content.active {
+            display: block;
+        }
+
         /* RESPONSIVE */
         @media (max-width: 968px) {
             .nav-menu {
@@ -454,19 +473,33 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html">area710</a></li>
                 <li class="has-submenu">
-                    <a href="raueme.html">Räume</a>
+                    <a href="raueme.html" class="lang-de">Räume</a>
+                    <a href="raueme.html" class="lang-en" style="display:none;">Rooms</a>
                     <ul class="submenu">
                         <li><a href="raueme.html#hall">Hall</a></li>
                         <li><a href="raueme.html#lab">Lab</a></li>
-                        <li><a href="raueme.html#barclub">Bar & Club</a></li>
+                        <li><a href="raueme.html#barclub" class="lang-de">Bar & Club</a>
+                            <a href="raueme.html#barclub" class="lang-en" style="display:none;">Bar & Club</a></li>
                         <li><a href="raueme.html#outdoor">Outdoor</a></li>
                     </ul>
                 </li>
                 <li><a href="events.html">Events</a></li>
-                <li><a href="gallery.html">Galerie</a></li>
-                <li><a href="about.html">Über Uns</a></li>
-                <li><a href="booking.html">Buchungsanfrage</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li>
+                    <a href="gallery.html" class="lang-de">Galerie</a>
+                    <a href="gallery.html" class="lang-en" style="display:none;">Gallery</a>
+                </li>
+                <li>
+                    <a href="about.html" class="lang-de">Über Uns</a>
+                    <a href="about.html" class="lang-en" style="display:none;">About Us</a>
+                </li>
+                <li>
+                    <a href="booking.html" class="lang-de">Buchungsanfrage</a>
+                    <a href="booking.html" class="lang-en" style="display:none;">Booking Request</a>
+                </li>
+                <li>
+                    <a href="contact.html" class="lang-de">Kontakt</a>
+                    <a href="contact.html" class="lang-en" style="display:none;">Contact</a>
+                </li>
 
                 <div class="lang-switch">
                     <button class="lang-btn active" data-lang="de">DE</button>
@@ -486,137 +519,252 @@
         <div class="hero-bg"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>Impressum</h1>
+            <h1 class="lang-de">Impressum</h1>
+            <h1 class="lang-en" style="display:none;">Legal Notice</h1>
         </div>
     </section>
 
     <section class="content-section">
         <div class="container">
 
-            <!-- COMPANY INFO -->
-            <div class="info-box">
-                <h2>Angaben gemäß § 5 TMG</h2>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Unternehmen</div>
-                        <div class="info-value">seeeye Werbung & Event GmbH</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Adresse</div>
-                        <div class="info-value">
-                            Gottlieb-Binder-Str. 2<br>
-                            71088 Holzgerlingen
+            <!-- GERMAN CONTENT -->
+            <div class="lang-content lang-de active">
+                <!-- COMPANY INFO -->
+                <div class="info-box">
+                    <h2>Angaben gemäß § 5 TMG</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Unternehmen</div>
+                            <div class="info-value">seeeye Werbung & Event GmbH</div>
                         </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Vertreten durch</div>
-                        <div class="info-value">Rüdiger Schmidt</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Telefon</div>
-                        <div class="info-value">
-                            <a href="tel:+4970314107300">+49 7031 410 73-0</a>
+                        <div class="info-item">
+                            <div class="info-label">Adresse</div>
+                            <div class="info-value">
+                                Gottlieb-Binder-Str. 2<br>
+                                71088 Holzgerlingen
+                            </div>
                         </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Fax</div>
-                        <div class="info-value">+49 7031 410 73-20</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">E-Mail</div>
-                        <div class="info-value">
-                            <a href="mailto:info@seeeye.de">info@seeeye.de</a>
+                        <div class="info-item">
+                            <div class="info-label">Vertreten durch</div>
+                            <div class="info-value">Rüdiger Schmidt</div>
                         </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Umsatzsteuer-ID</div>
-                        <div class="info-value">DE814863877</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Verantwortlich für den Inhalt</div>
-                        <div class="info-value">
-                            seeeye Werbung & Event GmbH<br>
-                            gemäß § 55 Abs. 2 RStV
+                        <div class="info-item">
+                            <div class="info-label">Telefon</div>
+                            <div class="info-value">
+                                <a href="tel:+4970314107300">+49 7031 410 73-0</a>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fax</div>
+                            <div class="info-value">+49 7031 410 73-20</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">E-Mail</div>
+                            <div class="info-value">
+                                <a href="mailto:info@seeeye.de">info@seeeye.de</a>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Umsatzsteuer-ID</div>
+                            <div class="info-value">DE814863877</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Verantwortlich für den Inhalt</div>
+                            <div class="info-value">
+                                seeeye Werbung & Event GmbH<br>
+                                gemäß § 55 Abs. 2 RStV
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- HAFTUNGSAUSSCHLUSS -->
+                <div class="legal-section accent-section">
+                    <h3>Haftungsausschluss</h3>
+
+                    <h4>Haftung für Inhalte</h4>
+                    <p>
+                        Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+                    </p>
+                    <p>
+                        Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.
+                    </p>
+
+                    <h4>Haftung für Links</h4>
+                    <p>
+                        Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.
+                    </p>
+                    <p>
+                        Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+                    </p>
+                </div>
+
+                <!-- URHEBERRECHT -->
+                <div class="legal-section accent-section blue">
+                    <h3>Urheberrecht</h3>
+                    <p>
+                        Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
+                    </p>
+                    <p>
+                        Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
+                    </p>
+                </div>
+
+                <!-- DATENSCHUTZ -->
+                <div class="legal-section accent-section green">
+                    <h3>Datenschutz</h3>
+                    <p>
+                        Die Nutzung unserer Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben.
+                    </p>
+                    <p>
+                        Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.
+                    </p>
+                    <p>
+                        Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails, vor.
+                    </p>
+                </div>
+
+                <!-- GOOGLE ANALYTICS -->
+                <div class="legal-section">
+                    <h3>Google Analytics</h3>
+                    <p>
+                        Diese Website benutzt Google Analytics, einen Webanalysedienst der Google Inc. ("Google"). Google Analytics verwendet sog. "Cookies", Textdateien, die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website durch Sie ermöglicht. Die durch den Cookie erzeugten Informationen über Ihre Benutzung dieser Website (einschließlich Ihrer IP-Adresse) wird an einen Server von Google in den USA übertragen und dort gespeichert.
+                    </p>
+                    <p>
+                        Google wird diese Informationen benutzen, um Ihre Nutzung der Website auszuwerten, um Reports über die Websiteaktivitäten für die Websitebetreiber zusammenzustellen und um weitere mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen zu erbringen. Auch wird Google diese Informationen gegebenenfalls an Dritte übertragen, sofern dies gesetzlich vorgeschrieben oder soweit Dritte diese Daten im Auftrag von Google verarbeiten.
+                    </p>
+                    <p>
+                        Google wird in keinem Fall Ihre IP-Adresse mit anderen Daten der Google in Verbindung bringen. Sie können die Installation der Cookies durch eine entsprechende Einstellung Ihrer Browser Software verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website voll umfänglich nutzen können. Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung der über Sie erhobenen Daten durch Google in der zuvor beschriebenen Art und Weise und zu dem zuvor benannten Zweck einverstanden.
+                    </p>
+                </div>
+
+                <!-- GOOGLE ADSENSE -->
+                <div class="legal-section">
+                    <h3>Google AdSense</h3>
+                    <p>
+                        Diese Website benutzt Google Adsense, einen Webanzeigendienst der Google Inc., USA ("Google"). Google Adsense verwendet sog. "Cookies" (Textdateien), die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website durch Sie ermöglicht. Google Adsense verwendet auch sog. "Web Beacons" (kleine unsichtbare Grafiken) zur Sammlung von Informationen. Durch die Verwendung des Web Beacons können einfache Aktionen wie der Besucherverkehr auf der Webseite aufgezeichnet und gesammelt werden.
+                    </p>
+                    <p>
+                        Die durch den Cookie und/oder Web Beacon erzeugten Informationen über Ihre Benutzung dieser Website (einschließlich Ihrer IP-Adresse) werden an einen Server von Google in den USA übertragen und dort gespeichert. Google wird diese Informationen benutzen, um Ihre Nutzung der Website im Hinblick auf die Anzeigen auszuwerten, um Reports über die Websiteaktivitäten und Anzeigen für die Websitebetreiber zusammenzustellen und um weitere mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen zu erbringen.
+                    </p>
+                    <p>
+                        Auch wird Google diese Informationen gegebenenfalls an Dritte übertragen, sofern dies gesetzlich vorgeschrieben oder soweit Dritte diese Daten im Auftrag von Google verarbeiten. Google wird in keinem Fall Ihre IP-Adresse mit anderen Daten der Google in Verbindung bringen. Das Speichern von Cookies auf Ihrer Festplatte und die Anzeige von Web Beacons können Sie verhindern, indem Sie in Ihren Browser-Einstellungen "keine Cookies akzeptieren" wählen (Im MS Internet-Explorer unter "Extras > Internetoptionen > Datenschutz > Einstellung"; im Firefox unter "Extras > Einstellungen > Datenschutz > Cookies"); wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website voll umfänglich nutzen können.
+                    </p>
+                    <p>
+                        Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung der über Sie erhobenen Daten durch Google in der zuvor beschriebenen Art und Weise und zu dem zuvor benannten Zweck einverstanden.
+                    </p>
+                </div>
             </div>
 
-            <!-- HAFTUNGSAUSSCHLUSS -->
-            <div class="legal-section accent-section">
-                <h3>Haftungsausschluss</h3>
+            <!-- ENGLISH CONTENT -->
+            <div class="lang-content lang-en">
+                <!-- COMPANY INFO -->
+                <div class="info-box">
+                    <h2>Information according to § 5 TMG</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Company</div>
+                            <div class="info-value">seeeye Werbung & Event GmbH</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Address</div>
+                            <div class="info-value">
+                                Gottlieb-Binder-Str. 2<br>
+                                71088 Holzgerlingen
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Represented by</div>
+                            <div class="info-value">Rüdiger Schmidt</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">
+                                <a href="tel:+4970314107300">+49 7031 410 73-0</a>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fax</div>
+                            <div class="info-value">+49 7031 410 73-20</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">E-Mail</div>
+                            <div class="info-value">
+                                <a href="mailto:info@seeeye.de">info@seeeye.de</a>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Sales tax ID</div>
+                            <div class="info-value">DE814863877</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Responsible for the content</div>
+                            <div class="info-value">
+                                seeeye Werbung & Event GmbH<br>
+                                according to § 55 para. 2 RStV
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <h4 style="color: var(--orange); margin-bottom: 1rem; font-weight: 500;">Haftung für Inhalte</h4>
-                <p>
-                    Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
-                </p>
-                <p>
-                    Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.
-                </p>
+                <!-- DISCLAIMER -->
+                <div class="legal-section accent-section">
+                    <h3>Disclaimer</h3>
 
-                <h4 style="color: var(--orange); margin: 2rem 0 1rem; font-weight: 500;">Haftung für Links</h4>
-                <p>
-                    Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.
-                </p>
-                <p>
-                    Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
-                </p>
-            </div>
+                    <h4>Liability for contents</h4>
+                    <p>
+                        The contents of our pages were created with the utmost care. However, we cannot guarantee the accuracy, completeness and timeliness of the content. As a service provider, we are responsible for our own content on these pages under the general laws according to § 7 para.1 TMG. According to §§ 8 to 10 TMG, however, we are not obligated as a service provider to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity. Obligations to remove or block the use of information under the general laws remain unaffected. However, liability in this regard is only possible from the point in time at which a concrete infringement of the law becomes known. If we become aware of such infringements, we will remove this content immediately.
+                    </p>
 
-            <!-- URHEBERRECHT -->
-            <div class="legal-section accent-section blue">
-                <h3>Urheberrecht</h3>
-                <p>
-                    Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
-                </p>
-                <p>
-                    Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
-                </p>
-            </div>
+                    <h4>Liability for links</h4>
+                    <p>
+                        Our offer contains links to external websites of third parties, on whose contents we have no influence. Therefore, we cannot assume any liability for these external contents. The respective provider or operator of the pages is always responsible for the content of the linked pages. The linked pages were checked for possible legal violations at the time of linking. Illegal contents were not recognizable at the time of linking.
+                    </p>
+                    <p>
+                        However, a permanent control of the contents of the linked pages is not reasonable without concrete evidence of a violation of the law. If we become aware of any infringements, we will remove such links immediately.
+                    </p>
+                </div>
 
-            <!-- DATENSCHUTZ -->
-            <div class="legal-section accent-section green">
-                <h3>Datenschutz</h3>
-                <p>
-                    Die Nutzung unserer Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben.
-                </p>
-                <p>
-                    Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.
-                </p>
-                <p>
-                    Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails, vor.
-                </p>
-            </div>
+                <!-- COPYRIGHT -->
+                <div class="legal-section accent-section blue">
+                    <h3>Copyright</h3>
+                    <p>
+                        The content and works created by the site operators on these pages are subject to German copyright law. Duplication, processing, distribution, or any form of commercialization of such material beyond the scope of the copyright law shall require the prior written consent of its respective author or creator. Downloads and copies of this site are only permitted for private, non-commercial use. Insofar as the content on this site was not created by the operator, the copyrights of third parties are respected. In particular, third-party content is identified as such. Should you nevertheless become aware of a copyright infringement, please inform us accordingly. If we become aware of any infringements, we will remove such content immediately.
+                    </p>
+                </div>
 
-            <!-- GOOGLE ANALYTICS -->
-            <div class="legal-section">
-                <h3>Google Analytics</h3>
-                <p>
-                    Diese Website benutzt Google Analytics, einen Webanalysedienst der Google Inc. ("Google"). Google Analytics verwendet sog. "Cookies", Textdateien, die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website durch Sie ermöglicht. Die durch den Cookie erzeugten Informationen über Ihre Benutzung dieser Website (einschließlich Ihrer IP-Adresse) wird an einen Server von Google in den USA übertragen und dort gespeichert.
-                </p>
-                <p>
-                    Google wird diese Informationen benutzen, um Ihre Nutzung der Website auszuwerten, um Reports über die Websiteaktivitäten für die Websitebetreiber zusammenzustellen und um weitere mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen zu erbringen. Auch wird Google diese Informationen gegebenenfalls an Dritte übertragen, sofern dies gesetzlich vorgeschrieben oder soweit Dritte diese Daten im Auftrag von Google verarbeiten.
-                </p>
-                <p>
-                    Google wird in keinem Fall Ihre IP-Adresse mit anderen Daten der Google in Verbindung bringen. Sie können die Installation der Cookies durch eine entsprechende Einstellung Ihrer Browser Software verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website voll umfänglich nutzen können. Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung der über Sie erhobenen Daten durch Google in der zuvor beschriebenen Art und Weise und zu dem zuvor benannten Zweck einverstanden.
-                </p>
-            </div>
+                <!-- PRIVACY -->
+                <div class="legal-section accent-section green">
+                    <h3>Privacy</h3>
+                    <p>
+                        The use of our website is generally possible without providing personal data. Insofar as personal data (for example, name, address or e-mail addresses) are collected on our pages, this is always done, as far as possible, on a voluntary basis. This data will not be passed on to third parties without your express consent.
+                    </p>
+                    <p>
+                        We point out that data transmission over the Internet (eg communication by e-mail) security gaps. A complete protection of data against access by third parties is not possible.
+                    </p>
+                    <p>
+                        The use of contact data published within the framework of the imprint obligation by third parties for the purpose of sending unsolicited advertising and information material is hereby expressly prohibited. The operators of the pages expressly reserve the right to take legal action in the event of the unsolicited sending of advertising information, such as spam e-mails.
+                    </p>
+                </div>
 
-            <!-- GOOGLE ADSENSE -->
-            <div class="legal-section">
-                <h3>Google AdSense</h3>
-                <p>
-                    Diese Website benutzt Google Adsense, einen Webanzeigendienst der Google Inc., USA ("Google"). Google Adsense verwendet sog. "Cookies" (Textdateien), die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website durch Sie ermöglicht. Google Adsense verwendet auch sog. "Web Beacons" (kleine unsichtbare Grafiken) zur Sammlung von Informationen. Durch die Verwendung des Web Beacons können einfache Aktionen wie der Besucherverkehr auf der Webseite aufgezeichnet und gesammelt werden.
-                </p>
-                <p>
-                    Die durch den Cookie und/oder Web Beacon erzeugten Informationen über Ihre Benutzung dieser Website (einschließlich Ihrer IP-Adresse) werden an einen Server von Google in den USA übertragen und dort gespeichert. Google wird diese Informationen benutzen, um Ihre Nutzung der Website im Hinblick auf die Anzeigen auszuwerten, um Reports über die Websiteaktivitäten und Anzeigen für die Websitebetreiber zusammenzustellen und um weitere mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen zu erbringen.
-                </p>
-                <p>
-                    Auch wird Google diese Informationen gegebenenfalls an Dritte übertragen, sofern dies gesetzlich vorgeschrieben oder soweit Dritte diese Daten im Auftrag von Google verarbeiten. Google wird in keinem Fall Ihre IP-Adresse mit anderen Daten der Google in Verbindung bringen. Das Speichern von Cookies auf Ihrer Festplatte und die Anzeige von Web Beacons können Sie verhindern, indem Sie in Ihren Browser-Einstellungen "keine Cookies akzeptieren" wählen (Im MS Internet-Explorer unter "Extras > Internetoptionen > Datenschutz > Einstellung"; im Firefox unter "Extras > Einstellungen > Datenschutz > Cookies"); wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website voll umfänglich nutzen können.
-                </p>
-                <p>
-                    Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung der über Sie erhobenen Daten durch Google in der zuvor beschriebenen Art und Weise und zu dem zuvor benannten Zweck einverstanden.
-                </p>
+                <!-- GOOGLE ANALYTICS -->
+                <div class="legal-section">
+                    <h3>Google Analytics</h3>
+                    <p>
+                        This website uses Google Analytics, a web analytics service provided by Google, Inc ("Google"). Google Analytics uses so-called "cookies", which are text files placed on your computer, to help the website analyze how users use the site. The information generated by the cookie about your use of the website (including your IP address) will be transmitted to and stored by Google on servers in the United States. Google will use this information for the purpose of evaluating your use of the website, compiling reports on website activity for website operators and providing other services relating to website activity and internet usage. Google may also transfer this information to third parties where required to do so by law, or where such third parties process the information on Google's behalf. Google will not associate your IP address with any other data held by Google. You may refuse the use of cookies by selecting the appropriate settings on your browser, however please note that if you do this you may not be able to use the full functionality of this website. By using this website, you consent to the processing of data about you by Google in the manner and for the purposes set out above.
+                    </p>
+                </div>
+
+                <!-- GOOGLE ADSENSE -->
+                <div class="legal-section">
+                    <h3>Google AdSense</h3>
+                    <p>
+                        This website uses Google Adsense, a web advertising service provided by Google Inc, USA ("Google"). Google Adsense uses so-called "cookies" (text files), which are stored on your computer and which enable an analysis of your use of the website. Google Adsense also uses so-called "web beacons" (small invisible graphics) to collect information. Through the use of the web beacon, simple actions such as visitor traffic to the website can be recorded and collected. The information generated by the cookie and/or web beacon about your use of this website (including your IP address) will be transmitted to and stored by Google on servers in the United States. Google will use this information for the purpose of evaluating your use of the website in relation to the advertisements, compiling reports on website activity and advertisements for website operators and providing other services relating to website activity and internet usage.
+                    </p>
+                    <p>
+                        Google may also transfer this information to third parties where required to do so by law, or where such third parties process the information on Google's behalf. Google will not associate your IP address with any other data held by Google. You can prevent the storage of cookies on your hard drive and the display of web beacons by selecting "do not accept cookies" in your browser settings (in MS Internet Explorer under "Tools > Internet Options > Privacy > Setting"; in Firefox under "Tools > Settings > Privacy > Cookies"); however, we would like to point out that in this case you may not be able to use all functions of this website to their full extent. By using this website, you consent to the processing of data about you by Google in the manner and for the purposes set out above.
+                    </p>
+                </div>
             </div>
 
         </div>
@@ -631,19 +779,23 @@
             </div>
 
             <div class="footer-section">
-                <h3>Öffnungszeiten Eventbüro</h3>
-                <p>Montag–Freitag</p>
-                <p>10:00–18:00 Uhr</p>
+                <h3 class="lang-de">Öffnungszeiten Eventbüro</h3>
+                <h3 class="lang-en" style="display:none;">Office Hours</h3>
+                <p class="lang-de">Montag–Freitag</p>
+                <p class="lang-en" style="display:none;">Monday–Friday</p>
+                <p>10:00–18:00 <span class="lang-de">Uhr</span></p>
             </div>
 
             <div class="footer-section">
-                <h3>Kontakt</h3>
+                <h3 class="lang-de">Kontakt</h3>
+                <h3 class="lang-en" style="display:none;">Contact</h3>
                 <p><a href="tel:+4970314107311">+49 7031 41073-11</a></p>
                 <p><a href="mailto:info@area710.de">info@area710.de</a></p>
             </div>
 
             <div class="footer-section">
-                <h3>Folge uns</h3>
+                <h3 class="lang-de">Folge uns</h3>
+                <h3 class="lang-en" style="display:none;">Follow us</h3>
                 <div class="social-links">
                     <a href="https://www.facebook.com/profile.php?id=100086162780846" class="social-link" target="_blank">
                         <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -659,7 +811,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p>
+            <p class="lang-de">
                 area710 eine Marke der seeeye Werbung & Event GmbH
                 <br>
                 <a href="impressum.html" class="active">Impressum</a>
@@ -667,10 +819,64 @@
                 <a href="booking.html">Buchungsanfrage</a>
                 <a href="https://ticket.area710.de" target="_blank">Ticket Verkauf</a>
             </p>
+            <p class="lang-en" style="display:none;">
+                area710 a brand of seeeye Werbung & Event GmbH
+                <br>
+                <a href="impressum.html" class="active">Legal Notice</a>
+                <a href="datenschutz.html">Privacy Policy</a>
+                <a href="booking.html">Booking Request</a>
+                <a href="https://ticket.area710.de" target="_blank">Ticket Sales</a>
+            </p>
         </div>
     </footer>
 
     <script>
+        // LANGUAGE SWITCHING
+        const langBtns = document.querySelectorAll('.lang-btn');
+
+        function setLanguage(lang) {
+            // Update buttons
+            langBtns.forEach(btn => {
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update content sections
+            document.querySelectorAll('.lang-content').forEach(content => {
+                if (content.classList.contains(`lang-${lang}`)) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+
+            // Update all lang-specific elements
+            document.querySelectorAll('.lang-de, .lang-en').forEach(el => {
+                if (el.classList.contains(`lang-${lang}`)) {
+                    el.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+
+            // Store preference
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // Add click listeners
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setLanguage(btn.dataset.lang);
+            });
+        });
+
+        // Load saved language or default to DE
+        const savedLang = localStorage.getItem('preferred-language') || 'de';
+        setLanguage(savedLang);
+
         // MOBILE MENU
         document.getElementById('mobileToggle').addEventListener('click', function() {
             document.getElementById('navMenu').classList.toggle('active');
