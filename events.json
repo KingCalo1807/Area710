@@ -1,0 +1,176 @@
+[
+  {
+    "id": 1,
+    "type": "event",
+    "title": {
+      "de": "u50 Platin Party",
+      "en": "u50 Platinum Party"
+    },
+    "description": {
+      "de": "Die legendäre u30 Party ist zurück! Tanzt mit uns die ganze Nacht zu den besten Hits. DJ-Line-up, Drinks & unvergessliche Stimmung garantiert!",
+      "en": "The legendary u30 party is back! Dance with us all night to the best hits. DJ line-up, drinks & unforgettable atmosphere guaranteed!"
+    },
+    "category": "party",
+    "date": "2026-02-14",
+    "time": "22:00",
+    "price": "15€",
+    "image": "img/dj.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 2,
+    "type": "event",
+    "title": {
+      "de": "Business Networking Event",
+      "en": "Business Networking Event"
+    },
+    "description": {
+      "de": "Knüpfen Sie wertvolle Kontakte bei unserem exklusiven Networking-Event. Mit Keynote-Speaker, Get-together und professionellem Catering.",
+      "en": "Make valuable contacts at our exclusive networking event. With keynote speaker, get-together and professional catering."
+    },
+    "category": "business",
+    "date": "2026-02-20",
+    "time": "18:00",
+    "price": "Kostenlos",
+    "image": "img/hall.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 3,
+    "type": "blocked",
+    "date": "2026-02-15",
+    "reason": "Private Firmenfeier"
+  },
+  {
+    "id": 4,
+    "type": "blocked",
+    "date": "2026-02-21",
+    "reason": "Private Hochzeit"
+  },
+  {
+    "id": 5,
+    "type": "event",
+    "title": {
+      "de": "ZauberFlea Mädchenflohmarkt",
+      "en": "ZauberFlea Girls' Flea Market"
+    },
+    "description": {
+      "de": "Der beliebte Mädchenflohmarkt mit tollen Second-Hand-Schätzen, Fashion, Accessoires und mehr. Kommt vorbei und entdeckt eure neuen Lieblingsteile!",
+      "en": "The popular girls' flea market with great second-hand treasures, fashion, accessories and more. Come by and discover your new favorite pieces!"
+    },
+    "category": "culture",
+    "date": "2026-03-05",
+    "time": "10:00",
+    "price": "Eintritt frei",
+    "image": "img/outdoor.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 6,
+    "type": "blocked",
+    "date": "2026-03-10",
+    "reason": "Private Veranstaltung"
+  },
+  {
+    "id": 7,
+    "type": "event",
+    "title": {
+      "de": "Social Media Marketing Workshop",
+      "en": "Social Media Marketing Workshop"
+    },
+    "description": {
+      "de": "Lernen Sie von Profis! In diesem Workshop zeigen wir Ihnen die besten Strategien für erfolgreiches Social Media Marketing. Inklusive Zertifikat.",
+      "en": "Learn from professionals! In this workshop we show you the best strategies for successful social media marketing. Certificate included."
+    },
+    "category": "workshop",
+    "date": "2026-03-15",
+    "time": "14:00",
+    "price": "89€",
+    "image": "img/hall.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 8,
+    "type": "event",
+    "title": {
+      "de": "Sommerfest 2026",
+      "en": "Summer Festival 2026"
+    },
+    "description": {
+      "de": "Das große area710 Sommerfest! Live-Musik, BBQ, Cocktails und entspannte Vibes auf unserer Outdoor-Fläche. Der perfekte Start in den Sommer!",
+      "en": "The big area710 summer festival! Live music, BBQ, cocktails and relaxed vibes on our outdoor area. The perfect start to summer!"
+    },
+    "category": "party",
+    "date": "2026-06-20",
+    "time": "16:00",
+    "price": "20€",
+    "image": "img/outdoor.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 9,
+    "type": "blocked",
+    "date": "2026-06-25",
+    "reason": "Private Geburtstagsfeier"
+  },
+  {
+    "id": 10,
+    "type": "event",
+    "title": {
+      "de": "Halloween Horror Night",
+      "en": "Halloween Horror Night"
+    },
+    "description": {
+      "de": "Gruselt euch mit uns! Die ultimative Halloween-Party mit gruseligen Dekorationen, Kostümwettbewerb und Special-Effects. Die beste Party des Jahres!",
+      "en": "Get scared with us! The ultimate Halloween party with spooky decorations, costume contest and special effects. The best party of the year!"
+    },
+    "category": "party",
+    "date": "2026-10-31",
+    "time": "21:00",
+    "price": "18€",
+    "image": "img/lab.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 11,
+    "type": "blocked",
+    "date": "2026-11-05",
+    "reason": "Umbauarbeiten"
+  },
+  {
+    "id": 12,
+    "type": "blocked",
+    "date": "2026-12-24",
+    "reason": "Weihnachten - Geschlossen"
+  },
+  {
+    "id": 13,
+    "type": "blocked",
+    "date": "2026-12-25",
+    "reason": "Weihnachten - Geschlossen"
+  },
+  {
+    "id": 14,
+    "type": "blocked",
+    "date": "2026-12-31",
+    "reason": "Silvester - Private Veranstaltung"
+  },
+  {
+    "id": 15,
+    "type": "event",
+    "title": {
+      "de": "Test",
+      "en": "Test"
+    },
+    "description": {
+      "de": "Das ist ein Test",
+      "en": "Test!"
+    },
+    "category": "party",
+    "date": "2026-01-10",
+    "time": "18:00",
+    "price": "100€",
+    "image": "img/lab.jpg",
+    "ticketUrl": "https://ticket.area710.de"
+  }
+]
