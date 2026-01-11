@@ -232,10 +232,10 @@
 
         /* ROOMS NAV */
         .rooms-nav {
-            display: flex; /* nebeneinander statt Tabelle */
-            justify-content: center; /* zentriert */
-            flex-wrap: wrap; /* bei kleinen Bildschirmen umbrechen */
-            gap: 2rem; /* Abstand zwischen den Icons */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
             margin: 3rem 0;
         }
 
@@ -253,13 +253,10 @@
         .room-nav-icon {
             width: 300px;
             height: 217px;
-            border-radius: 16px; /* runde Kanten */
+            border-radius: 16px;
             overflow: hidden;
-
-            /* Rahmen mit Farbe steuerbar */
             box-shadow: 0 0 0 3px var(--frame-color, var(--orange)),
             0 8px 18px rgba(0, 0, 0, 0.15);
-
             transition: transform 0.4s ease;
         }
 
@@ -269,7 +266,6 @@
             color: var(--white);
         }
 
-
         .room-nav-item:last-child {
             border-right: none;
         }
@@ -277,7 +273,7 @@
         .room-nav-item::before {
             content: '';
             position: absolute;
-            inset: 0; /* ersetzt bottom/left/width/height */
+            inset: 0;
             height: 100%;
             opacity: 0;
             transition: opacity 0.4s ease;
@@ -308,11 +304,8 @@
             width: 100%;
             max-width: 300px;
             margin: 0 auto 1rem;
-
             border-radius: 16px;
             overflow: hidden;
-
-
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -331,7 +324,6 @@
         .frame-green {
             --frame-color: var(--green);
         }
-
 
         .room-nav-item:hover .room-nav-icon {
             transform: translateY(-5px);
@@ -519,7 +511,6 @@
             border-radius: 4px;
         }
 
-        /* LIGHTBOX CLOSE BUTTON MIT PSEUDO-ELEMENT */
         .lightbox-close {
             position: absolute;
             top: 20px;
@@ -539,8 +530,8 @@
         .lightbox-close::before {
             content: "";
             position: absolute;
-            width: 20px; /* Breite des X */
-            height: 2px; /* Dicke der Linien */
+            width: 20px;
+            height: 2px;
             background: var(--white);
             transform: rotate(45deg);
         }
@@ -554,7 +545,6 @@
             transform: rotate(-45deg);
         }
 
-        /* HOVER-EFFEKT */
         .lightbox-close:hover::before,
         .lightbox-close:hover::after {
             background: var(--black);
@@ -563,7 +553,6 @@
         .lightbox-close:hover {
             background: var(--white);
         }
-
 
         .lightbox-nav {
             position: absolute;
@@ -826,21 +815,17 @@
             top: 100%;
             left: 0;
             min-width: 200px;
-
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid var(--border);
             border-radius: 12px;
-
             list-style: none;
             padding: 0.5rem 0;
             margin-top: 0.8rem;
-
             opacity: 0;
             visibility: hidden;
             transform: translateY(10px);
             transition: all 0.3s ease;
-
             z-index: 1000;
         }
 
@@ -965,7 +950,8 @@
         <ul class="nav-menu" id="navMenu">
             <li><a href="index.html">area710</a></li>
             <li class="has-submenu">
-                <a href="raueme.html " class="active">Räume</a>
+                <a href="raueme.html" class="lang-de active">Räume</a>
+                <a href="raueme.html" class="lang-en active" style="display:none;">Rooms</a>
                 <ul class="submenu">
                     <li><a href="raueme.html#hall">Hall</a></li>
                     <li><a href="raueme.html#lab">Lab</a></li>
@@ -974,10 +960,22 @@
                 </ul>
             </li>
             <li><a href="events.html">Events</a></li>
-            <li><a href="gallery.html">Galerie</a></li>
-            <li><a href="about.html">Über Uns</a></li>
-            <li><a href="booking.html">Buchungsanfrage</a></li>
-            <li><a href="contact.html">Kontakt</a></li>
+            <li>
+                <a href="gallery.html" class="lang-de">Galerie</a>
+                <a href="gallery.html" class="lang-en" style="display:none;">Gallery</a>
+            </li>
+            <li>
+                <a href="about.html" class="lang-de">Über Uns</a>
+                <a href="about.html" class="lang-en" style="display:none;">About Us</a>
+            </li>
+            <li>
+                <a href="booking.html" class="lang-de">Buchungsanfrage</a>
+                <a href="booking.html" class="lang-en" style="display:none;">Booking Request</a>
+            </li>
+            <li>
+                <a href="contact.html" class="lang-de">Kontakt</a>
+                <a href="contact.html" class="lang-en" style="display:none;">Contact</a>
+            </li>
 
             <div class="lang-switch">
                 <button class="lang-btn active" data-lang="de">DE</button>
@@ -997,8 +995,10 @@
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-        <h1>Unsere Räume</h1>
-        <p>Entdecke die area710 – unsere einzigartigen Eventflächen</p>
+        <h1 class="lang-de">Unsere Räume</h1>
+        <h1 class="lang-en" style="display:none;">Our Rooms</h1>
+        <p class="lang-de">Entdecke die area710 – unsere einzigartigen Eventflächen</p>
+        <p class="lang-en" style="display:none;">Discover area710 – our unique event spaces</p>
     </div>
 </section>
 
@@ -1032,9 +1032,10 @@
         <div id="hall" class="room-detail">
             <div class="room-header">
                 <h2 class="room-title">hall</h2>
-                <p class="room-lead">Seminare, Workshops, Tagungen, Feiern – hier ist genug Raum für geschäftliche und
+                <p class="room-lead lang-de">Seminare, Workshops, Tagungen, Feiern – hier ist genug Raum für geschäftliche und
                     private Events, inkl. einer 6 x 2 m großen hochauflösenden Video Wall und einem angrenzenden
                     Balkon</p>
+                <p class="room-lead lang-en" style="display:none;">Seminars, workshops, conferences, celebrations – there is enough space for business and private events, including a 6 x 2 m high-resolution video wall and an adjacent balcony</p>
             </div>
 
             <div class="room-gallery">
@@ -1073,16 +1074,17 @@
             <div class="room-facts">
                 <h4>facts</h4>
                 <ul class="facts-list">
-                    <li><strong>Fläche</strong><span>105 m² + 20 m² Balkon</span></li>
-                    <li><strong>Ausstattung</strong><span>Beschallungsanlage</span></li>
+                    <li><strong class="lang-de">Fläche</strong><strong class="lang-en" style="display:none;">Area</strong><span>105 m² + 20 m² <span class="lang-de">Balkon</span><span class="lang-en" style="display:none;">Balcony</span></span></li>
+                    <li><strong class="lang-de">Ausstattung</strong><strong class="lang-en" style="display:none;">Equipment</strong><span class="lang-de">Beschallungsanlage</span><span class="lang-en" style="display:none;">Sound system</span></li>
                     <li><strong>Video</strong><span>6 x 2 m Video Wall</span></li>
-                    <li><strong>Präsentation</strong><span>Beamer + Leinwand</span></li>
-                    <li><strong>Catering</strong><span>Kühlschrank, Küchenzeile</span></li>
+                    <li><strong class="lang-de">Präsentation</strong><strong class="lang-en" style="display:none;">Presentation</strong><span class="lang-de">Beamer + Leinwand</span><span class="lang-en" style="display:none;">Projector + Screen</span></li>
+                    <li><strong>Catering</strong><span class="lang-de">Kühlschrank, Küchenzeile</span><span class="lang-en" style="display:none;">Refrigerator, Kitchenette</span></li>
                 </ul>
             </div>
 
             <div class="text-center mt-2">
-                <a href="booking.html?room=hall" class="btn">hall anfragen</a>
+                <a href="booking.html?room=hall" class="btn lang-de">hall anfragen</a>
+                <a href="booking.html?room=hall" class="btn lang-en" style="display:none;">Request hall</a>
             </div>
         </div>
 
@@ -1090,11 +1092,12 @@
         <div id="lab" class="room-detail">
             <div class="room-header">
                 <h2 class="room-title">lab</h2>
-                <p class="room-lead">Ideal für Tagungen, Musikevents, Fahrzeugpräsentationen, Hausmessen oder sonstige
+                <p class="room-lead lang-de">Ideal für Tagungen, Musikevents, Fahrzeugpräsentationen, Hausmessen oder sonstige
                     Veranstaltungsformate, mit der Möglichkeit fließend In- und Outdoorinstallationen zu inszenieren.
                     Ausgestattet mit der besten Ton- und Lichttechnik, gibt es keine Grenzen diesen besonderen Raum mit
                     den farbigen Lichtkuben an der hohen Decke zu nutzen. Unser Highlight, die individuell bespielbare
                     LED-Wand in der Größe 4,8 x 2,7 m</p>
+                <p class="room-lead lang-en" style="display:none;">Ideal for conferences, music events, vehicle presentations, trade shows or other event formats, with the possibility of seamlessly staging indoor and outdoor installations. Equipped with the best sound and lighting technology, there are no limits to using this special space with the colored light cubes on the high ceiling. Our highlight, the individually customizable LED wall measuring 4.8 x 2.7 m</p>
             </div>
 
             <div class="room-gallery">
@@ -1145,20 +1148,20 @@
             <div class="room-facts">
                 <h4>facts</h4>
                 <ul class="facts-list">
-                    <li><strong>Fläche</strong><span>150 m²</span></li>
-                    <li><strong>Technik</strong><span>Professionelle Ton- und Lichttechnik</span></li>
-                    <li><strong>LED-Wand</strong><span>4,8 x 2,7 m individuell bespielbar</span></li>
-                    <li><strong>Präsentation</strong><span>Beamer + Leinwand</span></li>
-                    <li><strong>Erweiterung</strong><span>20 m² zusätzliche Fläche</span></li>
-                    <li><strong>Küche</strong><span>Abtrennbarer Küchenbereich inkl. Kühlschränke, Kühlhaus, Eiswürfelmaschine, Industriespülmaschine</span>
-                    </li>
-                    <li><strong>Zugang</strong><span>Rolltor zur Outdoorfläche</span></li>
-                    <li><strong>Barrierefreiheit</strong><span>Ja</span></li>
+                    <li><strong class="lang-de">Fläche</strong><strong class="lang-en" style="display:none;">Area</strong><span>150 m²</span></li>
+                    <li><strong class="lang-de">Technik</strong><strong class="lang-en" style="display:none;">Technology</strong><span class="lang-de">Professionelle Ton- und Lichttechnik</span><span class="lang-en" style="display:none;">Professional sound and lighting technology</span></li>
+                    <li><strong class="lang-de">LED-Wand</strong><strong class="lang-en" style="display:none;">LED Wall</strong><span class="lang-de">4,8 x 2,7 m individuell bespielbar</span><span class="lang-en" style="display:none;">4.8 x 2.7 m individually customizable</span></li>
+                    <li><strong class="lang-de">Präsentation</strong><strong class="lang-en" style="display:none;">Presentation</strong><span class="lang-de">Beamer + Leinwand</span><span class="lang-en" style="display:none;">Projector + Screen</span></li>
+                    <li><strong class="lang-de">Erweiterung</strong><strong class="lang-en" style="display:none;">Extension</strong><span class="lang-de">20 m² zusätzliche Fläche</span><span class="lang-en" style="display:none;">20 m² additional area</span></li>
+                    <li><strong class="lang-de">Küche</strong><strong class="lang-en" style="display:none;">Kitchen</strong><span class="lang-de">Abtrennbarer Küchenbereich inkl. Kühlschränke, Kühlhaus, Eiswürfelmaschine, Industriespülmaschine</span><span class="lang-en" style="display:none;">Separable kitchen area incl. refrigerators, cold room, ice machine, industrial dishwasher</span></li>
+                    <li><strong class="lang-de">Zugang</strong><strong class="lang-en" style="display:none;">Access</strong><span class="lang-de">Rolltor zur Outdoorfläche</span><span class="lang-en" style="display:none;">Roll-up door to outdoor area</span></li>
+                    <li><strong class="lang-de">Barrierefreiheit</strong><strong class="lang-en" style="display:none;">Accessibility</strong><span class="lang-de">Ja</span><span class="lang-en" style="display:none;">Yes</span></li>
                 </ul>
             </div>
 
             <div class="text-center mt-2">
-                <a href="booking.html?room=lab" class="btn">lab anfragen</a>
+                <a href="booking.html?room=lab" class="btn lang-de">lab anfragen</a>
+                <a href="booking.html?room=lab" class="btn lang-en" style="display:none;">Request lab</a>
             </div>
         </div>
 
@@ -1166,9 +1169,10 @@
         <div id="barclub" class="room-detail">
             <div class="room-header">
                 <h2 class="room-title">bar & club</h2>
-                <p class="room-lead">In dieser area können Veranstaltungen mit einer clubähnlichen Atmosphäre
+                <p class="room-lead lang-de">In dieser area können Veranstaltungen mit einer clubähnlichen Atmosphäre
                     verwirklicht werden. Eine topausgestattete Bar schließt sich an und sorgt für den richtigen Flair.
                     Auch hier ist ein nahtloser Übergang zu unserem Outdoorbereich möglich.</p>
+                <p class="room-lead lang-en" style="display:none;">In this area, events with a club-like atmosphere can be realized. A top-equipped bar adjoins and provides the right flair. Here too, a seamless transition to our outdoor area is possible.</p>
             </div>
 
             <div class="room-gallery">
@@ -1201,19 +1205,19 @@
             <div class="room-facts">
                 <h4>facts</h4>
                 <ul class="facts-list">
-                    <li><strong>Fläche</strong><span>65 m²</span></li>
-                    <li><strong>Technik</strong><span>Ton- und Lichttechnik</span></li>
-                    <li><strong>Präsentation</strong><span>Beamer + Projektionsfläche</span></li>
-                    <li><strong>Bar</strong><span>Professionell ausgestatteter Barbereich</span></li>
-                    <li><strong>Ausstattung</strong><span>Kühlschränke, Eiswürfelmaschine, Industriespülmaschine</span>
-                    </li>
-                    <li><strong>Zugang</strong><span>Rolltor zur Outdoorfläche</span></li>
-                    <li><strong>Barrierefreiheit</strong><span>Ja</span></li>
+                    <li><strong class="lang-de">Fläche</strong><strong class="lang-en" style="display:none;">Area</strong><span>65 m²</span></li>
+                    <li><strong class="lang-de">Technik</strong><strong class="lang-en" style="display:none;">Technology</strong><span class="lang-de">Ton- und Lichttechnik</span><span class="lang-en" style="display:none;">Sound and lighting technology</span></li>
+                    <li><strong class="lang-de">Präsentation</strong><strong class="lang-en" style="display:none;">Presentation</strong><span class="lang-de">Beamer + Projektionsfläche</span><span class="lang-en" style="display:none;">Projector + Projection surface</span></li>
+                    <li><strong>Bar</strong><span class="lang-de">Professionell ausgestatteter Barbereich</span><span class="lang-en" style="display:none;">Professionally equipped bar area</span></li>
+                    <li><strong class="lang-de">Ausstattung</strong><strong class="lang-en" style="display:none;">Equipment</strong><span class="lang-de">Kühlschränke, Eiswürfelmaschine, Industriespülmaschine</span><span class="lang-en" style="display:none;">Refrigerators, ice machine, industrial dishwasher</span></li>
+                    <li><strong class="lang-de">Zugang</strong><strong class="lang-en" style="display:none;">Access</strong><span class="lang-de">Rolltor zur Outdoorfläche</span><span class="lang-en" style="display:none;">Roll-up door to outdoor area</span></li>
+                    <li><strong class="lang-de">Barrierefreiheit</strong><strong class="lang-en" style="display:none;">Accessibility</strong><span class="lang-de">Ja</span><span class="lang-en" style="display:none;">Yes</span></li>
                 </ul>
             </div>
 
             <div class="text-center mt-2">
-                <a href="booking.html?room=barclub" class="btn">bar & club anfragen</a>
+                <a href="booking.html?room=barclub" class="btn lang-de">bar & club anfragen</a>
+                <a href="booking.html?room=barclub" class="btn lang-en" style="display:none;">Request bar & club</a>
             </div>
         </div>
 
@@ -1221,10 +1225,11 @@
         <div id="outdoor" class="room-detail">
             <div class="room-header">
                 <h2 class="room-title">outdoor</h2>
-                <p class="room-lead">Unsere Freifläche wurde speziell konzipiert, um eine einzigartige Verbindung
+                <p class="room-lead lang-de">Unsere Freifläche wurde speziell konzipiert, um eine einzigartige Verbindung
                     zwischen In- und Outdoorbereich, zwischen Natur und Gastfreundschaft zu schaffen. Entdecken Sie die
                     vielfältigen Möglichkeiten, die unsere Freiflächen, sowie erstklassig ausgestattete Outdoorküche für
                     Ihre gastronomischen Bedürfnisse und Events bieten.</p>
+                <p class="room-lead lang-en" style="display:none;">Our open space was specially designed to create a unique connection between indoor and outdoor areas, between nature and hospitality. Discover the diverse possibilities that our open spaces and first-class equipped outdoor kitchen offer for your gastronomic needs and events.</p>
             </div>
 
             <div class="room-gallery">
@@ -1263,18 +1268,19 @@
             <div class="room-facts">
                 <h4>facts</h4>
                 <ul class="facts-list">
-                    <li><strong>Fläche</strong><span>Bis zu 750 m²</span></li>
-                    <li><strong>Beleuchtung</strong><span>Vollständig beleuchtet</span></li>
-                    <li><strong>Sound</strong><span>Mobile Soundanlage</span></li>
-                    <li><strong>Ambiente</strong><span>Feuerschalen, Heizpilze</span></li>
-                    <li><strong>Überdachung</strong><span>Teilweise überdacht (56 m²)</span></li>
-                    <li><strong>Möblierung</strong><span>Selbstangefertigte Biertischgarnituren</span></li>
-                    <li><strong>Küche</strong><span>Erstklassig ausgestattete Outdoorküche</span></li>
+                    <li><strong class="lang-de">Fläche</strong><strong class="lang-en" style="display:none;">Area</strong><span class="lang-de">Bis zu 750 m²</span><span class="lang-en" style="display:none;">Up to 750 m²</span></li>
+                    <li><strong class="lang-de">Beleuchtung</strong><strong class="lang-en" style="display:none;">Lighting</strong><span class="lang-de">Vollständig beleuchtet</span><span class="lang-en" style="display:none;">Fully illuminated</span></li>
+                    <li><strong>Sound</strong><span class="lang-de">Mobile Soundanlage</span><span class="lang-en" style="display:none;">Mobile sound system</span></li>
+                    <li><strong class="lang-de">Ambiente</strong><strong class="lang-en" style="display:none;">Ambience</strong><span class="lang-de">Feuerschalen, Heizpilze</span><span class="lang-en" style="display:none;">Fire bowls, patio heaters</span></li>
+                    <li><strong class="lang-de">Überdachung</strong><strong class="lang-en" style="display:none;">Roofing</strong><span class="lang-de">Teilweise überdacht (56 m²)</span><span class="lang-en" style="display:none;">Partially covered (56 m²)</span></li>
+                    <li><strong class="lang-de">Möblierung</strong><strong class="lang-en" style="display:none;">Furniture</strong><span class="lang-de">Selbstangefertigte Biertischgarnituren</span><span class="lang-en" style="display:none;">Custom-made beer table sets</span></li>
+                    <li><strong class="lang-de">Küche</strong><strong class="lang-en" style="display:none;">Kitchen</strong><span class="lang-de">Erstklassig ausgestattete Outdoorküche</span><span class="lang-en" style="display:none;">First-class equipped outdoor kitchen</span></li>
                 </ul>
             </div>
 
             <div class="text-center mt-2">
-                <a href="booking.html?room=outdoor" class="btn">outdoor anfragen</a>
+                <a href="booking.html?room=outdoor" class="btn lang-de">outdoor anfragen</a>
+                <a href="booking.html?room=outdoor" class="btn lang-en" style="display:none;">Request outdoor</a>
             </div>
         </div>
 
@@ -1284,14 +1290,17 @@
 <!-- CAPACITY TABLE -->
 <section class="capacity-section">
     <div class="container">
-        <h2 class="section-title">Kapazitäten im Überblick</h2>
+        <h2 class="section-title lang-de">Kapazitäten im Überblick</h2>
+        <h2 class="section-title lang-en" style="display:none;">Capacity Overview</h2>
 
         <div class="table-wrapper">
             <table>
                 <thead>
                 <tr>
-                    <th>Bestuhlung</th>
-                    <th>ges. Location</th>
+                    <th class="lang-de">Bestuhlung</th>
+                    <th class="lang-en" style="display:none;">Seating</th>
+                    <th class="lang-de">ges. Location</th>
+                    <th class="lang-en" style="display:none;">Total Location</th>
                     <th>lab</th>
                     <th>hall</th>
                     <th>club</th>
@@ -1302,7 +1311,7 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td><strong>Fläche</strong></td>
+                    <td><strong class="lang-de">Fläche</strong><strong class="lang-en" style="display:none;">Area</strong></td>
                     <td>1.200 m²</td>
                     <td>150 m²</td>
                     <td>105 m²</td>
@@ -1312,7 +1321,7 @@
                     <td>65 m²</td>
                 </tr>
                 <tr>
-                    <td><strong>Reihenbestuhlung</strong></td>
+                    <td><strong class="lang-de">Reihenbestuhlung</strong><strong class="lang-en" style="display:none;">Row seating</strong></td>
                     <td>-</td>
                     <td>152</td>
                     <td>60</td>
@@ -1322,7 +1331,7 @@
                     <td>48</td>
                 </tr>
                 <tr>
-                    <td><strong>Parlamentarisch</strong></td>
+                    <td><strong class="lang-de">Parlamentarisch</strong><strong class="lang-en" style="display:none;">Parliamentary</strong></td>
                     <td>-</td>
                     <td>45</td>
                     <td>18</td>
@@ -1332,7 +1341,7 @@
                     <td>-</td>
                 </tr>
                 <tr>
-                    <td><strong>Stehempfang</strong></td>
+                    <td><strong class="lang-de">Stehempfang</strong><strong class="lang-en" style="display:none;">Standing reception</strong></td>
                     <td>-</td>
                     <td>170</td>
                     <td>85</td>
@@ -1342,7 +1351,7 @@
                     <td>-</td>
                 </tr>
                 <tr>
-                    <td><strong>Bankett</strong></td>
+                    <td><strong class="lang-de">Bankett</strong><strong class="lang-en" style="display:none;">Banquet</strong></td>
                     <td>-</td>
                     <td>280</td>
                     <td>100</td>
@@ -1352,7 +1361,7 @@
                     <td>-</td>
                 </tr>
                 <tr>
-                    <td><strong>U-Form</strong></td>
+                    <td><strong class="lang-de">U-Form</strong><strong class="lang-en" style="display:none;">U-Shape</strong></td>
                     <td>-</td>
                     <td>96</td>
                     <td>26</td>
@@ -1362,7 +1371,7 @@
                     <td>-</td>
                 </tr>
                 <tr>
-                    <td><strong>Block</strong></td>
+                    <td><strong class="lang-de">Block</strong><strong class="lang-en" style="display:none;">Block</strong></td>
                     <td>-</td>
                     <td>56</td>
                     <td>-</td>
@@ -1396,19 +1405,23 @@
         </div>
 
         <div class="footer-section">
-            <h3>Öffnungszeiten Eventbüro</h3>
-            <p>Montag–Freitag</p>
-            <p>10:00–18:00 Uhr</p>
+            <h3 class="lang-de">Öffnungszeiten Eventbüro</h3>
+            <h3 class="lang-en" style="display:none;">Office Hours</h3>
+            <p class="lang-de">Montag–Freitag</p>
+            <p class="lang-en" style="display:none;">Monday–Friday</p>
+            <p>10:00–18:00 <span class="lang-de">Uhr</span></p>
         </div>
 
         <div class="footer-section">
-            <h3>Kontakt</h3>
+            <h3 class="lang-de">Kontakt</h3>
+            <h3 class="lang-en" style="display:none;">Contact</h3>
             <p><a href="tel:+4970314107311">+49 7031 41073-11</a></p>
             <p><a href="mailto:info@area710.de">info@area710.de</a></p>
         </div>
 
         <div class="footer-section">
-            <h3>Folge uns</h3>
+            <h3 class="lang-de">Folge uns</h3>
+            <h3 class="lang-en" style="display:none;">Follow us</h3>
             <div class="social-links">
                 <a href="https://www.facebook.com/profile.php?id=100086162780846" class="social-link" target="_blank">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
@@ -1430,7 +1443,7 @@
     </div>
 
     <div class="footer-bottom">
-        <p>
+        <p class="lang-de">
             area710 eine Marke der seeeye Werbung & Event GmbH
             <br>
             <a href="impressum.html">Impressum</a>
@@ -1438,10 +1451,55 @@
             <a href="booking.html">Buchungsanfrage</a>
             <a href="https://ticket.area710.de" target="_blank">Ticket Verkauf</a>
         </p>
+        <p class="lang-en" style="display:none;">
+            area710 a brand of seeeye Werbung & Event GmbH
+            <br>
+            <a href="impressum.html">Legal Notice</a>
+            <a href="datenschutz.html">Privacy Policy</a>
+            <a href="booking.html">Booking Request</a>
+            <a href="https://ticket.area710.de" target="_blank">Ticket Sales</a>
+        </p>
     </div>
 </footer>
 
 <script>
+    // LANGUAGE SWITCHING
+    const langBtns = document.querySelectorAll('.lang-btn');
+
+    function setLanguage(lang) {
+        // Update buttons
+        langBtns.forEach(btn => {
+            if (btn.dataset.lang === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update all lang-specific elements
+        document.querySelectorAll('.lang-de, .lang-en').forEach(el => {
+            if (el.classList.contains(`lang-${lang}`)) {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+
+        // Store preference
+        localStorage.setItem('preferred-language', lang);
+    }
+
+    // Add click listeners
+    langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setLanguage(btn.dataset.lang);
+        });
+    });
+
+    // Load saved language or default to DE
+    const savedLang = localStorage.getItem('preferred-language') || 'de';
+    setLanguage(savedLang);
+
     // MOBILE MENU
     document.getElementById('mobileToggle').addEventListener('click', function () {
         document.getElementById('navMenu').classList.toggle('active');
@@ -1571,23 +1629,6 @@
             lightboxImg.style.animation = 'zoomIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
         }, 10);
     }
-
-    // LANGUAGE SWITCHER
-    let currentLang = 'de';
-
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const targetLang = this.dataset.lang;
-            if (targetLang === currentLang) return;
-
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentLang = targetLang;
-
-            // Simple translation (would need data-de/data-en attributes in production)
-            document.documentElement.lang = targetLang;
-        });
-    });
 </script>
 
 </body>

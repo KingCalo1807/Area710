@@ -153,6 +153,12 @@
     "id": 14,
     "type": "blocked",
     "date": "2026-12-31",
+    "room": [
+      "hall",
+      "lab",
+      "outdoor",
+      "barclub"
+    ],
     "reason": "Silvester - Private Veranstaltung"
   },
   {
@@ -172,5 +178,18 @@
     "price": "100€",
     "image": "img/lab.jpg",
     "ticketUrl": "https://ticket.area710.de"
+  },
+  {
+    "id": 16,
+    "type": "blocked",
+    "status": "reserved",
+    "room": [
+      "hall",
+      "lab",
+      "outdoor",
+      "barclub"
+    ],
+    "date": "2026-03-20",
+    "time": "18:00"
   }
 ]

@@ -310,6 +310,41 @@
             min-height: 120px;
         }
 
+        /* NEU: AVAILABILITY INFO */
+        .availability-info {
+            margin-top: 0.5rem;
+            padding: 0.8rem;
+            background: var(--gray-light);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .availability-info.show {
+            display: block;
+        }
+
+        .availability-info.blocked {
+            background: rgba(205, 17, 81, 0.2);
+            border-left: 3px solid var(--red);
+        }
+
+        .availability-info.available {
+            background: rgba(174, 198, 16, 0.2);
+            border-left: 3px solid var(--green);
+        }
+
+        .availability-info.partial {
+            background: rgba(252, 171, 20, 0.2);
+            border-left: 3px solid var(--orange);
+        }
+
+        .blocked-rooms-list {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
         /* ROOM SELECTION */
         .room-grid {
             display: grid;
@@ -342,7 +377,27 @@
         }
 
         .room-option {
-            --active-color: var(--white); /* Fallback */
+            --active-color: var(--white);
+            position: relative;
+        }
+
+        /* NEU: DISABLED STATE */
+        .room-option.disabled .room-label {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(205, 17, 81, 0.1);
+        }
+
+        .room-option.disabled .room-checkbox {
+            pointer-events: none;
+        }
+
+        .room-option.disabled::after {
+            content: '🔒';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.8rem;
         }
 
         .frame-orange {
@@ -365,6 +420,11 @@
         .room-label:hover {
             transform: translateY(-5px);
             border-color: var(--white);
+        }
+
+        .room-option.disabled .room-label:hover {
+            transform: none;
+            border-color: var(--border);
         }
 
         .room-checkbox:checked + .room-label {
@@ -901,6 +961,9 @@
                             <div class="form-group">
                                 <label for="eventDate" class="required" data-de="Datum" data-en="Date">Datum</label>
                                 <input type="date" id="eventDate" name="eventDate" required>
+
+                                <!-- NEU: AVAILABILITY INFO -->
+                                <div class="availability-info" id="availabilityInfo"></div>
                             </div>
 
                             <div class="form-group">
@@ -931,21 +994,21 @@
 
                         <div class="room-grid">
 
-                            <div class="room-option frame-orange">
+                            <div class="room-option frame-orange" id="room-option-hall">
                                 <input type="checkbox" id="room-hall" name="rooms[]" value="hall" class="room-checkbox">
                                 <label for="room-hall" class="room-label">
                                     <span class="room-name">hall</span>
                                 </label>
                             </div>
 
-                            <div class="room-option frame-blue">
+                            <div class="room-option frame-blue" id="room-option-lab">
                                 <input type="checkbox" id="room-lab" name="rooms[]" value="lab" class="room-checkbox">
                                 <label for="room-lab" class="room-label">
                                     <span class="room-name">lab</span>
                                 </label>
                             </div>
 
-                            <div class="room-option frame-red">
+                            <div class="room-option frame-red" id="room-option-barclub">
                                 <input type="checkbox" id="room-barclub" name="rooms[]" value="barclub"
                                        class="room-checkbox">
                                 <label for="room-barclub" class="room-label">
@@ -953,7 +1016,7 @@
                                 </label>
                             </div>
 
-                            <div class="room-option frame-green">
+                            <div class="room-option frame-green" id="room-option-outdoor">
                                 <input type="checkbox" id="room-outdoor" name="rooms[]" value="outdoor"
                                        class="room-checkbox">
                                 <label for="room-outdoor" class="room-label">
@@ -1105,7 +1168,7 @@
 
         <div class="footer-section">
             <h3 data-de="Kontakt" data-en="Contact">Kontakt</h3>
-            <p><a href="tel:+4970314107311">+49 7031 41073-11</a></p>
+            <p><a href="tel:+4870314107311">+49 7031 41073-11</a></p>
             <p><a href="mailto:info@area710.de">info@area710.de</a></p>
         </div>
 
@@ -1215,6 +1278,130 @@
             roomCheckbox.checked = true;
         }
     }
+
+    // ===== NEU: VERFÜGBARKEITS-CHECK AUS EVENTS.JSON =====
+    let blockedRooms = [];
+
+    const roomNames = {
+        hall: { de: 'Hall', en: 'Hall' },
+        lab: { de: 'Lab', en: 'Lab' },
+        barclub: { de: 'Bar & Club', en: 'Bar & Club' },
+        outdoor: { de: 'Outdoor', en: 'Outdoor' }
+    };
+
+    // Lade events.json beim Seitenstart
+    async function loadAvailability() {
+        try {
+            const response = await fetch('events.json');
+            const data = await response.json();
+
+            // Extrahiere alle geblockten Räume
+            blockedRooms = data.filter(item => item.type === 'blocked');
+
+            console.log('Geblockte Räume geladen:', blockedRooms);
+        } catch (error) {
+            console.error('Fehler beim Laden der Verfügbarkeit:', error);
+        }
+    }
+
+    // Prüfe Verfügbarkeit wenn Datum gewählt wird
+    function checkAvailability(selectedDate) {
+    const availabilityInfo = document.getElementById('availabilityInfo');
+    const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
+
+    if (!selectedDate) {
+        availabilityInfo.classList.remove('show');
+        enableAllRooms();
+        if (submitBtn) submitBtn.disabled = false;
+        return;
+    }
+
+    const blockedForDate = blockedRooms.filter(item => item.date === selectedDate);
+
+    if (blockedForDate.length === 0) {
+        // Alle Räume verfügbar
+        availabilityInfo.className = 'availability-info available show';
+        availabilityInfo.innerHTML = currentLang === 'de'
+            ? '✅ Alle Räume sind an diesem Datum verfügbar!'
+            : '✅ All rooms are available on this date!';
+        enableAllRooms();
+        if (submitBtn) submitBtn.disabled = false;
+    } else {
+        // Sammle alle geblockten Räume
+        let allBlockedRooms = [];
+        blockedForDate.forEach(item => {
+            if (Array.isArray(item.room)) {
+                allBlockedRooms.push(...item.room);
+            } else {
+                allBlockedRooms.push(item.room);
+            }
+        });
+
+        const uniqueBlocked = [...new Set(allBlockedRooms)];
+
+        if (uniqueBlocked.length === 4) {
+            // Alle Räume geblockt
+            availabilityInfo.className = 'availability-info blocked show';
+            availabilityInfo.innerHTML = currentLang === 'de'
+                ? '❌ Leider sind an diesem Datum alle Räume bereits gebucht.'
+                : '❌ Unfortunately all rooms are already booked.';
+            disableAllRooms();
+            if (submitBtn) submitBtn.disabled = true; // Button sperren
+        } else {
+            // Teilweise verfügbar
+            const blockedRoomsList = uniqueBlocked.map(room => roomNames[room][currentLang]);
+            const blockedText = blockedRoomsList.join(', ');
+
+            availabilityInfo.className = 'availability-info partial show';
+            availabilityInfo.innerHTML = currentLang === 'de'
+                ? `⚠️ Folgende Räume sind bereits gebucht: <div class="blocked-rooms-list">${blockedText}</div>`
+                : `⚠️ The following rooms are already booked: <div class="blocked-rooms-list">${blockedText}</div>`;
+
+            // Räume sperren
+            enableAllRooms();
+            uniqueBlocked.forEach(room => disableRoom(room));
+            if (submitBtn) submitBtn.disabled = false; // Button freigeben
+        }
+    }
+}
+
+    function enableAllRooms() {
+        ['hall', 'lab', 'barclub', 'outdoor'].forEach(room => {
+            const roomOption = document.getElementById(`room-option-${room}`);
+            const roomCheckbox = document.getElementById(`room-${room}`);
+
+            if (roomOption && roomCheckbox) {
+                roomOption.classList.remove('disabled');
+                roomCheckbox.disabled = false;
+            }
+        });
+    }
+
+    function disableAllRooms() {
+        ['hall', 'lab', 'barclub', 'outdoor'].forEach(room => {
+            disableRoom(room);
+        });
+    }
+
+    function disableRoom(room) {
+        const roomOption = document.getElementById(`room-option-${room}`);
+        const roomCheckbox = document.getElementById(`room-${room}`);
+
+        if (roomOption && roomCheckbox) {
+            roomOption.classList.add('disabled');
+            roomCheckbox.disabled = true;
+            roomCheckbox.checked = false;
+        }
+    }
+
+    // Event-Listener für Datum-Änderung
+    document.getElementById('eventDate').addEventListener('change', function() {
+        checkAvailability(this.value);
+    });
+
+    // Lade Verfügbarkeit beim Start
+    loadAvailability();
+    // ===== ENDE NEU =====
 
     // FORM SUBMISSION
     document.getElementById('bookingForm').addEventListener('submit', async function (e) {
