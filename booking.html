@@ -310,7 +310,7 @@
             min-height: 120px;
         }
 
-        /* NEU: AVAILABILITY INFO */
+        /* AVAILABILITY INFO */
         .availability-info {
             margin-top: 0.5rem;
             padding: 0.8rem;
@@ -381,7 +381,7 @@
             position: relative;
         }
 
-        /* NEU: DISABLED STATE */
+        /* DISABLED STATE */
         .room-option.disabled .room-label {
             opacity: 0.4;
             cursor: not-allowed;
@@ -962,7 +962,7 @@
                                 <label for="eventDate" class="required" data-de="Datum" data-en="Date">Datum</label>
                                 <input type="date" id="eventDate" name="eventDate" required>
 
-                                <!-- NEU: AVAILABILITY INFO -->
+                                <!-- AVAILABILITY INFO -->
                                 <div class="availability-info" id="availabilityInfo"></div>
                             </div>
 
@@ -1208,7 +1208,31 @@
 </footer>
 
 <script>
+    // ========================================
+    // CSRF TOKEN MANAGEMENT
+    // ========================================
+    let csrfToken = null;
+
+    // Token beim Seitenstart abrufen
+    async function fetchCSRFToken() {
+        try {
+            const response = await fetch('get-csrf-token.php');
+            const data = await response.json();
+            if (data.csrf_token) {
+                csrfToken = data.csrf_token;
+                console.log('CSRF token loaded');
+            }
+        } catch (error) {
+            console.error('Error fetching CSRF token:', error);
+        }
+    }
+
+    // Token beim Seitenstart laden
+    fetchCSRFToken();
+
+    // ========================================
     // MOBILE MENU
+    // ========================================
     document.getElementById('mobileToggle').addEventListener('click', function () {
         document.getElementById('navMenu').classList.toggle('active');
     });
@@ -1219,7 +1243,9 @@
         });
     });
 
+    // ========================================
     // HEADER SCROLL
+    // ========================================
     window.addEventListener('scroll', () => {
         const header = document.getElementById('header');
         if (window.pageYOffset > 100) {
@@ -1229,7 +1255,9 @@
         }
     });
 
+    // ========================================
     // LANGUAGE SWITCHER
+    // ========================================
     let currentLang = 'de';
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -1269,7 +1297,9 @@
         document.documentElement.lang = lang;
     }
 
+    // ========================================
     // PRE-SELECT ROOM FROM URL
+    // ========================================
     const urlParams = new URLSearchParams(window.location.search);
     const roomParam = urlParams.get('room');
     if (roomParam) {
@@ -1279,7 +1309,9 @@
         }
     }
 
-    // ===== NEU: VERFÜGBARKEITS-CHECK AUS EVENTS.JSON =====
+    // ========================================
+    // AVAILABILITY CHECK
+    // ========================================
     let blockedRooms = [];
 
     const roomNames = {
@@ -1289,81 +1321,71 @@
         outdoor: { de: 'Outdoor', en: 'Outdoor' }
     };
 
-    // Lade events.json beim Seitenstart
     async function loadAvailability() {
         try {
             const response = await fetch('events.json');
             const data = await response.json();
-
-            // Extrahiere alle geblockten Räume
             blockedRooms = data.filter(item => item.type === 'blocked');
-
-            console.log('Geblockte Räume geladen:', blockedRooms);
+            console.log('Blocked rooms loaded:', blockedRooms);
         } catch (error) {
-            console.error('Fehler beim Laden der Verfügbarkeit:', error);
+            console.error('Error loading availability:', error);
         }
     }
 
-    // Prüfe Verfügbarkeit wenn Datum gewählt wird
     function checkAvailability(selectedDate) {
-    const availabilityInfo = document.getElementById('availabilityInfo');
-    const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
+        const availabilityInfo = document.getElementById('availabilityInfo');
+        const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
 
-    if (!selectedDate) {
-        availabilityInfo.classList.remove('show');
-        enableAllRooms();
-        if (submitBtn) submitBtn.disabled = false;
-        return;
-    }
-
-    const blockedForDate = blockedRooms.filter(item => item.date === selectedDate);
-
-    if (blockedForDate.length === 0) {
-        // Alle Räume verfügbar
-        availabilityInfo.className = 'availability-info available show';
-        availabilityInfo.innerHTML = currentLang === 'de'
-            ? '✅ Alle Räume sind an diesem Datum verfügbar!'
-            : '✅ All rooms are available on this date!';
-        enableAllRooms();
-        if (submitBtn) submitBtn.disabled = false;
-    } else {
-        // Sammle alle geblockten Räume
-        let allBlockedRooms = [];
-        blockedForDate.forEach(item => {
-            if (Array.isArray(item.room)) {
-                allBlockedRooms.push(...item.room);
-            } else {
-                allBlockedRooms.push(item.room);
-            }
-        });
-
-        const uniqueBlocked = [...new Set(allBlockedRooms)];
-
-        if (uniqueBlocked.length === 4) {
-            // Alle Räume geblockt
-            availabilityInfo.className = 'availability-info blocked show';
-            availabilityInfo.innerHTML = currentLang === 'de'
-                ? '❌ Leider sind an diesem Datum alle Räume bereits gebucht.'
-                : '❌ Unfortunately all rooms are already booked.';
-            disableAllRooms();
-            if (submitBtn) submitBtn.disabled = true; // Button sperren
-        } else {
-            // Teilweise verfügbar
-            const blockedRoomsList = uniqueBlocked.map(room => roomNames[room][currentLang]);
-            const blockedText = blockedRoomsList.join(', ');
-
-            availabilityInfo.className = 'availability-info partial show';
-            availabilityInfo.innerHTML = currentLang === 'de'
-                ? `⚠️ Folgende Räume sind bereits gebucht: <div class="blocked-rooms-list">${blockedText}</div>`
-                : `⚠️ The following rooms are already booked: <div class="blocked-rooms-list">${blockedText}</div>`;
-
-            // Räume sperren
+        if (!selectedDate) {
+            availabilityInfo.classList.remove('show');
             enableAllRooms();
-            uniqueBlocked.forEach(room => disableRoom(room));
-            if (submitBtn) submitBtn.disabled = false; // Button freigeben
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+        }
+
+        const blockedForDate = blockedRooms.filter(item => item.date === selectedDate);
+
+        if (blockedForDate.length === 0) {
+            availabilityInfo.className = 'availability-info available show';
+            availabilityInfo.innerHTML = currentLang === 'de'
+                ? '✅ Alle Räume sind an diesem Datum verfügbar!'
+                : '✅ All rooms are available on this date!';
+            enableAllRooms();
+            if (submitBtn) submitBtn.disabled = false;
+        } else {
+            let allBlockedRooms = [];
+            blockedForDate.forEach(item => {
+                if (Array.isArray(item.room)) {
+                    allBlockedRooms.push(...item.room);
+                } else {
+                    allBlockedRooms.push(item.room);
+                }
+            });
+
+            const uniqueBlocked = [...new Set(allBlockedRooms)];
+
+            if (uniqueBlocked.length === 4) {
+                availabilityInfo.className = 'availability-info blocked show';
+                availabilityInfo.innerHTML = currentLang === 'de'
+                    ? '❌ Leider sind an diesem Datum alle Räume bereits gebucht.'
+                    : '❌ Unfortunately all rooms are already booked.';
+                disableAllRooms();
+                if (submitBtn) submitBtn.disabled = true;
+            } else {
+                const blockedRoomsList = uniqueBlocked.map(room => roomNames[room][currentLang]);
+                const blockedText = blockedRoomsList.join(', ');
+
+                availabilityInfo.className = 'availability-info partial show';
+                availabilityInfo.innerHTML = currentLang === 'de'
+                    ? `⚠️ Folgende Räume sind bereits gebucht: <div class="blocked-rooms-list">${blockedText}</div>`
+                    : `⚠️ The following rooms are already booked: <div class="blocked-rooms-list">${blockedText}</div>`;
+
+                enableAllRooms();
+                uniqueBlocked.forEach(room => disableRoom(room));
+                if (submitBtn) submitBtn.disabled = false;
+            }
         }
     }
-}
 
     function enableAllRooms() {
         ['hall', 'lab', 'barclub', 'outdoor'].forEach(room => {
@@ -1394,16 +1416,15 @@
         }
     }
 
-    // Event-Listener für Datum-Änderung
     document.getElementById('eventDate').addEventListener('change', function() {
         checkAvailability(this.value);
     });
 
-    // Lade Verfügbarkeit beim Start
     loadAvailability();
-    // ===== ENDE NEU =====
 
+    // ========================================
     // FORM SUBMISSION
+    // ========================================
     document.getElementById('bookingForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
@@ -1414,6 +1435,15 @@
         // Hide messages
         errorMessage.classList.remove('show');
         successMessage.classList.remove('show');
+
+        // CSRF-Token prüfen
+        if (!csrfToken) {
+            errorMessage.textContent = currentLang === 'de'
+                ? 'Sicherheitsfehler. Bitte laden Sie die Seite neu.'
+                : 'Security error. Please reload the page.';
+            errorMessage.classList.add('show');
+            return;
+        }
 
         // Disable button
         btn.disabled = true;
@@ -1436,6 +1466,7 @@
 
         // Build data object
         const data = {
+            csrf_token: csrfToken,  // CSRF-Token hinzufügen
             firstName: formData.get('firstName'),
             lastName: formData.get('lastName'),
             email: formData.get('email'),
@@ -1453,7 +1484,6 @@
         };
 
         try {
-            // Send to backend
             const response = await fetch('booking-handler.php', {
                 method: 'POST',
                 headers: {
@@ -1465,24 +1495,22 @@
             const result = await response.json();
 
             if (result.success) {
-                // Show success message
                 document.querySelector('.booking-form').style.display = 'none';
                 successMessage.classList.add('show');
-
-                // Scroll to top
                 window.scrollTo({top: 0, behavior: 'smooth'});
+
+                // Neues CSRF-Token für nächste Anfrage holen
+                fetchCSRFToken();
             } else {
-                throw new Error(result.message || 'Ein Fehler ist aufgetreten');
+                throw new Error(result.error || 'Ein Fehler ist aufgetreten');
             }
 
         } catch (error) {
-            // Show error
             errorMessage.textContent = currentLang === 'de'
                 ? 'Fehler beim Senden der Anfrage. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch.'
                 : 'Error sending the request. Please try again or contact us by phone.';
             errorMessage.classList.add('show');
 
-            // Re-enable button
             btn.disabled = false;
             btn.textContent = currentLang === 'de' ? 'Anfrage senden' : 'Send Request';
 
