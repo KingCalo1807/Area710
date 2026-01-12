@@ -4,7 +4,7 @@ gallery - json => CHECK
 events - Suchfunktion => CHECK
 gallery - Suchfunktion => CHECK
 räume - bilder => CHECK
-räume => übersetzung
+räume => übersetzung => CHECK
 räume - kästen mit farbe => CHECK
 events - übersetzten => CHECK
 impressum => CHECK
@@ -13,4 +13,4 @@ datenschutz => CHECK
 
 Handy
 Räume vier kästen => CHECK
-Kalender
+Kalender => CHECK

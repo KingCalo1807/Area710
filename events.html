@@ -345,7 +345,7 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             background: var(--border);
-            min-width: 700px; /* Mindestbreite für lesbare Darstellung */
+            min-width: 700px;
         }
 
         .calendar-day-header {
@@ -430,14 +430,37 @@
             color: var(--black);
         }
 
+        /* NEU: GEBLOCKTE RÄUME */
         .calendar-blocked {
             background: rgba(205, 17, 81, 0.3);
             padding: 0.4rem;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             border-radius: 3px;
-            text-align: center;
-            color: var(--red);
+            margin-bottom: 0.3rem;
+        }
+
+        .calendar-blocked.reserved {
+            background: rgba(252, 171, 20, 0.3);
+        }
+
+        .blocked-status {
             font-weight: 500;
+            margin-bottom: 0.3rem;
+            color: var(--white);
+        }
+
+        .blocked-rooms-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+
+        .blocked-room-tag {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         /* SEARCH BOX */
@@ -996,7 +1019,6 @@
                 justify-content: center;
             }
 
-            /* MOBILE SCROLL HINT ANZEIGEN */
             .mobile-scroll-hint {
                 display: block;
             }
@@ -1024,7 +1046,6 @@
                 width: 100%;
             }
 
-            /* Kleinere Kalendertage auf Mobile */
             .calendar-day {
                 min-height: 100px;
                 padding: 0.5rem;
@@ -1047,6 +1068,15 @@
             .download-event-btn {
                 font-size: 0.6rem;
                 padding: 0.1rem 0.3rem;
+            }
+
+            .calendar-blocked {
+                font-size: 0.6rem;
+                padding: 0.3rem;
+            }
+
+            .blocked-room-tag {
+                font-size: 0.55rem;
             }
         }
 
@@ -1134,7 +1164,6 @@
 <section class="section">
     <div class="container">
 
-        <!-- VIEW TOGGLE -->
         <div class="view-toggle">
             <button class="view-btn active" onclick="switchView('calendar')">
                 <span data-de="Kalender" data-en="Calendar">Kalender</span>
@@ -1144,9 +1173,7 @@
             </button>
         </div>
 
-        <!-- CALENDAR VIEW -->
         <div class="calendar-view active" id="calendarView">
-            <!-- MOBILE SCROLL HINT -->
             <div class="mobile-scroll-hint">
                 <span data-de="Nach links/rechts wischen zum Scrollen" data-en="Swipe left/right to scroll">Nach links/rechts wischen zum Scrollen</span>
             </div>
@@ -1161,7 +1188,6 @@
                     </div>
                 </div>
 
-                <!-- WRAPPER FÜR HORIZONTAL SCROLL -->
                 <div class="calendar-wrapper">
                     <div class="calendar-grid" id="calendarGrid"></div>
                 </div>
@@ -1183,9 +1209,7 @@
             </div>
         </div>
 
-        <!-- GRID VIEW -->
         <div class="grid-view" id="gridView">
-            <!-- SEARCH BOX -->
             <div class="search-box">
                 <input
                         type="text"
@@ -1376,10 +1400,18 @@
         en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     };
 
+    // NEU: Raum-Namen
+    const roomNames = {
+        hall: { de: 'Hall', en: 'Hall' },
+        lab: { de: 'Lab', en: 'Lab' },
+        barclub: { de: 'Bar & Club', en: 'Bar & Club' },
+        outdoor: { de: 'Outdoor', en: 'Outdoor' }
+    };
+
     // ICS DOWNLOAD FUNCTION
     function downloadICS(event) {
         const eventDate = new Date(event.date + 'T' + event.time);
-        const endDate = new Date(eventDate.getTime() + (3 * 60 * 60 * 1000)); // +3 Stunden Standard-Dauer
+        const endDate = new Date(eventDate.getTime() + (3 * 60 * 60 * 1000));
 
         const formatDate = (date) => {
             return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
@@ -1434,12 +1466,15 @@
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+
+            // Öffentliche Events
             const dayEvents = allEvents.filter(e => e.date === dateStr);
-            const isBlocked = blockedDates.includes(dateStr);
+            // Geblockte Einträge MIT Raum-Info
+            const dayBlocked = blockedDates.filter(b => b.date === dateStr);
 
             let classes = 'calendar-day';
             if (isToday) classes += ' today';
-            if (isBlocked) classes += ' blocked';
+            if (dayBlocked.length > 0) classes += ' blocked';
 
             html += `<div class="${classes}">
                     <div class="calendar-date">${day}</div>
@@ -1449,7 +1484,24 @@
                             <button class="download-event-btn" onclick="event.stopPropagation(); downloadICS(allEvents.find(ev => ev.id === ${e.id}))" title="${currentLang === 'de' ? 'Zu Kalender hinzufügen' : 'Add to calendar'}">📥</button>
                         </div>
                     `).join('')}
-                    ${isBlocked ? `<div class="calendar-blocked">${currentLang === 'de' ? 'Ausgebucht' : 'Booked'}</div>` : ''}
+                    ${dayBlocked.map(b => {
+                        // room kann String ODER Array sein
+                        const rooms = Array.isArray(b.room) ? b.room : (b.room ? [b.room] : []);
+                        const statusText = currentLang === 'de'
+                            ? (b.status === 'reserved' ? 'Reserviert' : 'Ausgebucht')
+                            : (b.status === 'reserved' ? 'Reserved' : 'Fully booked');
+
+                        return `
+                            <div class="calendar-blocked ${b.status || 'booked'}">
+                                <div class="blocked-status">${statusText}</div>
+                                ${rooms.length > 0 ? `
+                                    <div class="blocked-rooms-container">
+                                        ${rooms.map(room => `<div class="blocked-room-tag">${roomNames[room] ? roomNames[room][currentLang] : room}</div>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('')}
                 </div>`;
         }
 
@@ -1498,10 +1550,11 @@
             const response = await fetch('events.json');
             const data = await response.json();
 
-            allEvents = data.filter(item => item.type !== 'blocked');
-            blockedDates = data
-                .filter(item => item.type === 'blocked')
-                .map(item => item.date);
+            // NUR Events für die Liste
+            allEvents = data.filter(item => item.type === 'event');
+
+            // Geblockte Einträge MIT allen Infos für Kalender
+            blockedDates = data.filter(item => item.type === 'blocked');
 
             renderCalendar();
             displayEvents(allEvents);
