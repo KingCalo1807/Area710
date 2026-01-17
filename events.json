@@ -39,12 +39,16 @@
     "id": 3,
     "type": "blocked",
     "date": "2026-02-15",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Private Firmenfeier"
   },
   {
     "id": 4,
     "type": "blocked",
     "date": "2026-02-21",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Private Hochzeit"
   },
   {
@@ -69,6 +73,8 @@
     "id": 6,
     "type": "blocked",
     "date": "2026-03-10",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Private Veranstaltung"
   },
   {
@@ -111,6 +117,8 @@
     "id": 9,
     "type": "blocked",
     "date": "2026-06-25",
+    "startTime": "07:00",
+    "endTime": "23:59",
     "reason": "Private Geburtstagsfeier"
   },
   {
@@ -135,30 +143,38 @@
     "id": 11,
     "type": "blocked",
     "date": "2026-11-05",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Umbauarbeiten"
   },
   {
     "id": 12,
     "type": "blocked",
     "date": "2026-12-24",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Weihnachten - Geschlossen"
   },
   {
     "id": 13,
     "type": "blocked",
     "date": "2026-12-25",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Weihnachten - Geschlossen"
   },
   {
     "id": 14,
     "type": "blocked",
-    "date": "2026-12-31",
     "room": [
       "hall",
       "lab",
       "outdoor",
       "barclub"
     ],
+    "date": "2026-12-31",
+    "startTime": "00:00",
+    "endTime": "23:59",
     "reason": "Silvester - Private Veranstaltung"
   },
   {
@@ -191,6 +207,19 @@
       "barclub"
     ],
     "date": "2026-03-20",
-    "time": "18:00"
+    "time": "18:00",
+    "startTime": "18:00",
+    "endTime": "23:59"
+  },
+  {
+    "id": 17,
+    "type": "blocked",
+    "room": [
+      "hall"
+    ],
+    "date": "2026-03-21",
+    "startTime": "00:00",
+    "endTime": "10:00",
+    "reason": "Aufräumarbeiten nach Event vom Vortag"
   }
 ]

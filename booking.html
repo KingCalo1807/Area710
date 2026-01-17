@@ -1310,7 +1310,7 @@
     }
 
     // ========================================
-    // AVAILABILITY CHECK
+    // AVAILABILITY CHECK WITH TIME RANGES
     // ========================================
     let blockedRooms = [];
 
@@ -1332,7 +1332,28 @@
         }
     }
 
-    function checkAvailability(selectedDate) {
+    function formatTime(time) {
+        if (!time) return '';
+        return time.substring(0, 5); // Returns HH:MM format
+    }
+
+    function timeToMinutes(time) {
+        if (!time) return 0;
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function checkTimeOverlap(requestedTime, requestedDuration, blockedStart, blockedEnd) {
+        const reqStart = timeToMinutes(requestedTime);
+        const reqEnd = reqStart + (parseInt(requestedDuration) * 60);
+        const blockStart = timeToMinutes(blockedStart);
+        const blockEnd = timeToMinutes(blockedEnd);
+
+        // Check if times overlap
+        return !(reqEnd <= blockStart || reqStart >= blockEnd);
+    }
+
+    function checkAvailability(selectedDate, selectedTime = null, duration = null) {
         const availabilityInfo = document.getElementById('availabilityInfo');
         const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
 
@@ -1353,32 +1374,137 @@
             enableAllRooms();
             if (submitBtn) submitBtn.disabled = false;
         } else {
-            let allBlockedRooms = [];
+            // Check if user has selected time AND duration
+            const hasCompleteTimeInfo = selectedTime && duration;
+
+            let roomBlockDetails = {};
+
             blockedForDate.forEach(item => {
-                if (Array.isArray(item.room)) {
-                    allBlockedRooms.push(...item.room);
-                } else {
-                    allBlockedRooms.push(item.room);
+                const rooms = Array.isArray(item.room) ? item.room : (item.room ? [item.room] : ['hall', 'lab', 'barclub', 'outdoor']);
+                const startTime = item.startTime || '00:00';
+                const endTime = item.endTime || '23:59';
+
+                // If time info is complete, check for overlap; otherwise, assume all blocks apply
+                let hasTimeConflict = true;
+
+                if (hasCompleteTimeInfo) {
+                    hasTimeConflict = checkTimeOverlap(selectedTime, duration, startTime, endTime);
+                }
+
+                if (hasTimeConflict) {
+                    rooms.forEach(room => {
+                        if (!roomBlockDetails[room]) {
+                            roomBlockDetails[room] = [];
+                        }
+                        roomBlockDetails[room].push({
+                            startTime: startTime,
+                            endTime: endTime,
+                            reason: item.reason
+                        });
+                    });
                 }
             });
 
-            const uniqueBlocked = [...new Set(allBlockedRooms)];
+            const uniqueBlocked = Object.keys(roomBlockDetails);
 
-            if (uniqueBlocked.length === 4) {
-                availabilityInfo.className = 'availability-info blocked show';
+            if (uniqueBlocked.length === 0) {
+                // This only happens when time is selected and no conflicts found
+                availabilityInfo.className = 'availability-info available show';
                 availabilityInfo.innerHTML = currentLang === 'de'
-                    ? '❌ Leider sind an diesem Datum alle Räume bereits gebucht.'
-                    : '❌ Unfortunately all rooms are already booked.';
+                    ? '✅ Alle Räume sind zu der gewählten Zeit verfügbar!'
+                    : '✅ All rooms are available at the selected time!';
+                enableAllRooms();
+                if (submitBtn) submitBtn.disabled = false;
+            } else if (uniqueBlocked.length === 4) {
+                // All rooms blocked
+                let infoHTML = currentLang === 'de'
+                    ? '❌ Leider sind an diesem Datum '
+                    : '❌ Unfortunately all rooms are already booked ';
+
+                if (hasCompleteTimeInfo) {
+                    infoHTML += currentLang === 'de'
+                        ? 'zur gewählten Zeit alle Räume bereits gebucht.'
+                        : 'at the selected time.';
+                } else {
+                    infoHTML += currentLang === 'de'
+                        ? 'alle Räume bereits gebucht.'
+                        : 'on this date.';
+                }
+
+                // Only show time details if time and duration are selected
+                if (hasCompleteTimeInfo) {
+                    const timeDetails = [];
+                    uniqueBlocked.forEach(room => {
+                        const details = roomBlockDetails[room];
+                        details.forEach(detail => {
+                            const timeInfo = `${roomNames[room][currentLang]}: ${formatTime(detail.startTime)} - ${formatTime(detail.endTime)}`;
+                            if (!timeDetails.includes(timeInfo)) {
+                                timeDetails.push(timeInfo);
+                            }
+                        });
+                    });
+
+                    if (timeDetails.length > 0) {
+                        infoHTML += '<div class="blocked-rooms-list" style="margin-top: 0.5rem;">';
+                        timeDetails.forEach(detail => {
+                            infoHTML += `<div>🕒 ${detail}</div>`;
+                        });
+                        infoHTML += '</div>';
+                    }
+                } else {
+                    // Just show which rooms are blocked without times
+                    infoHTML += '<div class="blocked-rooms-list" style="margin-top: 0.5rem;">';
+                    infoHTML += currentLang === 'de'
+                        ? '<div style="opacity: 0.8;">Bitte wählen Sie eine Uhrzeit und Dauer, um die genaue Verfügbarkeit zu prüfen.</div>'
+                        : '<div style="opacity: 0.8;">Please select a time and duration to check exact availability.</div>';
+                    infoHTML += '</div>';
+                }
+
+                availabilityInfo.className = 'availability-info blocked show';
+                availabilityInfo.innerHTML = infoHTML;
                 disableAllRooms();
                 if (submitBtn) submitBtn.disabled = true;
             } else {
-                const blockedRoomsList = uniqueBlocked.map(room => roomNames[room][currentLang]);
-                const blockedText = blockedRoomsList.join(', ');
+                // Some rooms blocked
+                let infoHTML = currentLang === 'de'
+                    ? '⚠️ Folgende Räume sind bereits gebucht:'
+                    : '⚠️ The following rooms are already booked:';
+
+                infoHTML += '<div class="blocked-rooms-list" style="margin-top: 0.5rem;">';
+
+                // Only show time details if time and duration are selected
+                if (hasCompleteTimeInfo) {
+                    uniqueBlocked.forEach(room => {
+                        const details = roomBlockDetails[room];
+                        details.forEach(detail => {
+                            infoHTML += `<div>🔒 ${roomNames[room][currentLang]}: ${formatTime(detail.startTime)} - ${formatTime(detail.endTime)}`;
+                            if (detail.reason) {
+                                infoHTML += ` <span style="opacity: 0.7; font-size: 0.85em;">(${detail.reason})</span>`;
+                            }
+                            infoHTML += '</div>';
+                        });
+                    });
+                } else {
+                    // Just show room names without times
+                    uniqueBlocked.forEach(room => {
+                        infoHTML += `<div>🔒 ${roomNames[room][currentLang]}`;
+                        const firstDetail = roomBlockDetails[room][0];
+                        if (firstDetail.reason) {
+                            infoHTML += ` <span style="opacity: 0.7; font-size: 0.85em;">(${firstDetail.reason})</span>`;
+                        }
+                        infoHTML += '</div>';
+                    });
+                    infoHTML += '<div style="opacity: 0.8; margin-top: 0.5rem;">';
+                    infoHTML += currentLang === 'de'
+                        ? 'Bitte wählen Sie eine Uhrzeit und Dauer, um die genaue Verfügbarkeit zu prüfen.'
+                        : 'Please select a time and duration to check exact availability.';
+                    infoHTML += '</div>';
+                }
+
+                infoHTML += '</div>';
 
                 availabilityInfo.className = 'availability-info partial show';
-                availabilityInfo.innerHTML = currentLang === 'de'
-                    ? `⚠️ Folgende Räume sind bereits gebucht: <div class="blocked-rooms-list">${blockedText}</div>`
-                    : `⚠️ The following rooms are already booked: <div class="blocked-rooms-list">${blockedText}</div>`;
+                availabilityInfo.innerHTML = infoHTML;
 
                 enableAllRooms();
                 uniqueBlocked.forEach(room => disableRoom(room));
@@ -1416,8 +1542,27 @@
         }
     }
 
+    // Event listeners for date, time, and duration changes
     document.getElementById('eventDate').addEventListener('change', function() {
-        checkAvailability(this.value);
+        const selectedTime = document.getElementById('eventTime').value;
+        const duration = document.getElementById('duration').value;
+        checkAvailability(this.value, selectedTime, duration);
+    });
+
+    document.getElementById('eventTime').addEventListener('change', function() {
+        const selectedDate = document.getElementById('eventDate').value;
+        const duration = document.getElementById('duration').value;
+        if (selectedDate) {
+            checkAvailability(selectedDate, this.value, duration);
+        }
+    });
+
+    document.getElementById('duration').addEventListener('change', function() {
+        const selectedDate = document.getElementById('eventDate').value;
+        const selectedTime = document.getElementById('eventTime').value;
+        if (selectedDate) {
+            checkAvailability(selectedDate, selectedTime, this.value);
+        }
     });
 
     loadAvailability();
