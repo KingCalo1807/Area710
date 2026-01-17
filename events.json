@@ -221,5 +221,16 @@
     "startTime": "00:00",
     "endTime": "10:00",
     "reason": "Aufräumarbeiten nach Event vom Vortag"
+  },
+  {
+    "id": 17,
+    "type": "blocked",
+    "room": [
+      "lab"
+    ],
+    "date": "2026-03-21",
+    "startTime": "00:00",
+    "endTime": "10:00",
+    "reason": "Aufräumarbeiten nach Event vom Vortag"
   }
 ]

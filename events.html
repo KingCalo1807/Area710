@@ -1491,9 +1491,19 @@
                             ? (b.status === 'reserved' ? 'Reserviert' : 'Ausgebucht')
                             : (b.status === 'reserved' ? 'Reserved' : 'Fully booked');
 
+                        // Zeitbereich formatieren
+                        const startTime = b.startTime || '00:00';
+                        const endTime = b.endTime || '23:59';
+                        const isFullDay = (startTime === '00:00' && endTime === '23:59');
+
+                        const timeDisplay = isFullDay
+                            ? (currentLang === 'de' ? 'Ganztägig' : 'All day')
+                            : `${startTime.substring(0,5)} - ${endTime.substring(0,5)}`;
+
                         return `
                             <div class="calendar-blocked ${b.status || 'booked'}">
                                 <div class="blocked-status">${statusText}</div>
+                                <div style="font-size: 0.65rem; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">🕒 ${timeDisplay}</div>
                                 ${rooms.length > 0 ? `
                                     <div class="blocked-rooms-container">
                                         ${rooms.map(room => `<div class="blocked-room-tag">${roomNames[room] ? roomNames[room][currentLang] : room}</div>`).join('')}
