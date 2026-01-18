@@ -49,7 +49,11 @@
         "date": "2026-02-21",
         "startTime": "00:00",
         "endTime": "23:59",
-        "reason": "Private Hochzeit"
+        "reason": "Private Hochzeit",
+        "room": [
+            "hall",
+            "lab"
+        ]
     },
     {
         "id": 5,

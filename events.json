@@ -261,7 +261,7 @@
         "startTime": "07:00",
         "endTime": "23:59",
         "reason": "Hochzeit",
-        "status": "confirmed",
+        "status": "reserved",
         "room": [
             "hall",
             "lab",

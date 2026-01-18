@@ -183,7 +183,8 @@
             "en": "Outdoor at Night"
         },
         "category": "location",
-        "date": "12.08.2025",
-        "image": "gallery-images/outdoor-night-1.jpg"
+        "date": "",
+        "eventId": 18,
+        "image": "gallery-images/c-o-2.jpg"
     }
 ]

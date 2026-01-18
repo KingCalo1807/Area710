@@ -68,149 +68,297 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/img/fav.png">
-    <title>JSON Editor – Events & Gallery</title>
+    <title>JSON Editor – Events & Gallery | area710</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --orange: #FCAB14;
+            --red: #CD1151;
+            --blue: #009FE2;
+            --green: #AEC610;
+            --black: #000;
+            --white: #fff;
+            --gray: #222;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.6;
             padding: 20px;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
+            background: var(--gray);
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border: 1px solid var(--border);
         }
-        
+
         h1 {
-            color: #333;
-            margin-bottom: 20px;
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--orange), var(--red), var(--blue), var(--green));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s ease-in-out infinite;
         }
-        
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
         .project-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            gap: 15px;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
-        
+
         .project-selector input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px 18px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--white);
             font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
         }
-        
+
+        .project-selector input:focus {
+            outline: none;
+            border-color: var(--orange);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .project-selector input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
         .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 12px 28px;
             font-size: 14px;
-            transition: all 0.3s;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            border: 1px solid var(--white);
+            background: transparent;
+            color: var(--white);
+            cursor: pointer;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Roboto', sans-serif;
         }
-        
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn:hover {
+            color: var(--black);
+            border-color: var(--white);
+        }
+
         .btn-primary {
-            background: #007bff;
-            color: white;
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--black);
         }
-        
+
+        .btn-primary::before {
+            background: transparent;
+        }
+
         .btn-primary:hover {
-            background: #0056b3;
+            background: transparent;
+            color: var(--orange);
         }
-        
+
         .btn-success {
-            background: #28a745;
-            color: white;
+            background: var(--green);
+            border-color: var(--green);
+            color: var(--black);
         }
-        
+
+        .btn-success::before {
+            background: transparent;
+        }
+
         .btn-success:hover {
-            background: #218838;
+            background: transparent;
+            color: var(--green);
         }
-        
+
         .btn-danger {
-            background: #dc3545;
-            color: white;
+            background: var(--red);
+            border-color: var(--red);
+            color: var(--white);
         }
-        
+
+        .btn-danger::before {
+            background: transparent;
+        }
+
         .btn-danger:hover {
-            background: #c82333;
+            background: transparent;
+            color: var(--red);
         }
-        
+
         .tabs {
             display: flex;
-            gap: 5px;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 20px;
+            gap: 8px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 30px;
         }
-        
+
         .tab {
-            padding: 12px 24px;
-            background: #f8f9fa;
+            padding: 14px 28px;
+            background: rgba(0, 0, 0, 0.3);
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px 5px 0 0;
-            transition: all 0.3s;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.3s ease;
+            color: var(--white);
+            font-family: 'Roboto', sans-serif;
+            position: relative;
         }
-        
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--orange), var(--red), var(--blue), var(--green));
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .tab.active {
-            background: #007bff;
-            color: white;
+            background: rgba(252, 171, 20, 0.15);
+            color: var(--orange);
         }
-        
+
+        .tab.active::after {
+            width: 100%;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         .list-controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 25px;
         }
-        
+
         .item-list {
             list-style: none;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-height: 400px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-height: 450px;
             overflow-y: auto;
             margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.4);
         }
-        
+
+        .item-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .item-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .item-list::-webkit-scrollbar-thumb {
+            background: var(--orange);
+            border-radius: 4px;
+        }
+
         .item-list li {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        
+
+        .item-list li:last-child {
+            border-bottom: none;
+        }
+
+        .item-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(252, 171, 20, 0.2), transparent);
+            transition: width 0.3s ease;
+        }
+
         .item-list li:hover {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.03);
         }
-        
+
+        .item-list li:hover::before {
+            width: 100%;
+        }
+
         .item-list li.selected {
-            background: #e7f3ff;
-            border-left: 3px solid #007bff;
+            background: rgba(252, 171, 20, 0.15);
+            border-left: 4px solid var(--orange);
+            padding-left: 16px;
         }
-        
+
         .modal {
             display: none;
             position: fixed;
@@ -218,83 +366,184 @@ HTML_TEMPLATE = """
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
             z-index: 1000;
             overflow-y: auto;
         }
-        
+
         .modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
-        
+
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 600px;
+            background: var(--gray);
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 650px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
         }
-        
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--orange);
+            border-radius: 4px;
+        }
+
+        .modal-content h2 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: var(--orange);
+            letter-spacing: 0.05em;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        
+
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #333;
+            margin-bottom: 8px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            letter-spacing: 0.03em;
         }
-        
+
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--white);
             font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
         }
-        
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--orange);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
         .form-group textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
         }
-        
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select[multiple] {
+            padding: 8px;
+        }
+
+        .form-group select option {
+            padding: 8px;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
         .form-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
-            margin-top: 20px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
         }
-        
+
         .alert {
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            border: 1px solid;
+            animation: slideIn 0.4s ease;
         }
-        
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(174, 198, 16, 0.15);
+            color: var(--green);
+            border-color: var(--green);
         }
-        
+
         .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(205, 17, 81, 0.15);
+            color: var(--red);
+            border-color: var(--red);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .project-selector {
+                flex-direction: column;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+
+            .list-controls {
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                flex: 1;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>JSON Editor – Events & Gallery</h1>
+        <h1>area710 JSON Editor</h1>
         
         <div class="project-selector">
             <input type="text" id="projectPath" placeholder="Projektpfad eingeben (z.B. /Users/username/mein-projekt)" value="{{ project_path or '' }}">

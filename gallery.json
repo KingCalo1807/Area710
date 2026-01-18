@@ -130,9 +130,9 @@
             "en": "Party Crowd u30 Night"
         },
         "category": "party",
-        "date": "20.02.2025",
-        "image": "gallery-images/party-crowd-1.jpg",
-        "eventId": 1
+        "date": "",
+        "eventId": 10,
+        "image": "gallery-images/party-crowd-1.jpg"
     },
     {
         "id": 14,
