@@ -189,15 +189,15 @@
             "en": "Test"
         },
         "description": {
-            "de": "Das ist ein Test",
-            "en": "Test!"
+            "de": "",
+            "en": ""
         },
         "category": "party",
-        "date": "2026-01-10",
+        "date": "2026-01-09",
         "time": "18:00",
         "price": "100€",
-        "image": "img/lab.jpg",
-        "ticketUrl": "https://ticket.area710.de"
+        "ticketUrl": "https://ticket.area710.de",
+        "image": "img/lab.jpg"
     },
     {
         "id": 16,
@@ -261,12 +261,30 @@
         "startTime": "07:00",
         "endTime": "23:59",
         "reason": "Hochzeit",
-        "status": "confirmed",
+        "status": "reserved",
         "room": [
             "hall",
             "lab",
             "outdoor",
             "barclub"
         ]
+    },
+    {
+        "id": 20,
+        "type": "event",
+        "title": {
+            "de": "Mercedes",
+            "en": "Mercedes"
+        },
+        "description": {
+            "de": "CLA",
+            "en": "CLA"
+        },
+        "category": "business",
+        "date": "2026-07-18",
+        "time": "12:50",
+        "price": "0€",
+        "ticketUrl": "https://ticket.area710.de",
+        "image": "img/Mercedes-Benz_CLA_AMG_Line_2019_Edition_Orange_Art_559670_1920x1080.jpg"
     }
 ]

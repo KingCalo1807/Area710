@@ -6,10 +6,13 @@ Funktioniert auf allen Betriebssystemen ohne tkinter-Probleme
 import os
 import json
 import shutil
-from flask import Flask, render_template_string, request, jsonify, send_from_directory
+from datetime import datetime
+from flask import Flask, render_template_string, request, jsonify, send_from_directory, send_file
 from werkzeug.utils import secure_filename
 import webbrowser
 from threading import Timer
+import zipfile
+import io
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
@@ -539,9 +542,209 @@ HTML_TEMPLATE = """
                 flex: 1;
             }
         }
+
+        /* VORSCHAU BUTTON */
+        .preview-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: var(--orange);
+            border: 2px solid var(--orange);
+            color: var(--black);
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 8px 24px rgba(252, 171, 20, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-btn:hover {
+            background: transparent;
+            color: var(--orange);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(252, 171, 20, 0.6);
+        }
+
+        .preview-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* VORSCHAU MODAL */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .preview-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 90vh;
+            background: var(--gray);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .preview-header h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--orange);
+        }
+
+        .preview-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-tab {
+            padding: 8px 20px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--white);
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-tab.active {
+            background: var(--orange);
+            color: var(--black);
+            border-color: var(--orange);
+        }
+
+        .preview-close {
+            background: transparent;
+            border: 2px solid var(--red);
+            color: var(--red);
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-close:hover {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .preview-iframe {
+            flex: 1;
+            border: none;
+            background: var(--black);
+        }
+
+        @media (max-width: 768px) {
+            .preview-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .preview-btn span {
+                display: none;
+            }
+
+            .preview-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .preview-tabs {
+                flex-direction: column;
+            }
+
+            .preview-tab {
+                text-align: center;
+            }
+        }
+        
+        /* KALENDER STYLES */
+        .calendar-grid div {
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-grid div:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        /* DRAG & DROP */
+        .item-list li {
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .item-list li:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .item-list li.dragging {
+            opacity: 0.5;
+        }
+        
+        .item-list li.drag-over {
+            border-top: 2px solid var(--orange);
+        }
+        
+        /* SECONDARY BUTTON */
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--white);
+        }
     </style>
 </head>
 <body>
+    <!-- Vorschau-Button (rechts unten fixiert) -->
+    <button class="preview-btn" onclick="openPreview()" title="Webseiten-Vorschau">
+        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+        </svg>
+        <span>Vorschau</span>
+    </button>
+
     <div class="container">
         <h1>area710 JSON Editor</h1>
         
@@ -553,23 +756,143 @@ HTML_TEMPLATE = """
         <div id="alert"></div>
         
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('events')">Events</button>
+            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('calendar')">Kalender</button>
+            <button class="tab" onclick="switchTab('events')">Events</button>
             <button class="tab" onclick="switchTab('blocked')">Private Veranstaltungen</button>
             <button class="tab" onclick="switchTab('gallery')">Gallery</button>
         </div>
         
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content active">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div style="background: rgba(252, 171, 20, 0.1); border: 1px solid var(--orange); border-radius: 12px; padding: 25px;">
+                    <h3 style="color: var(--orange); font-size: 2.5rem; margin-bottom: 10px;" id="stats-total-events">-</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Gesamt Events</p>
+                </div>
+                <div style="background: rgba(174, 198, 16, 0.1); border: 1px solid var(--green); border-radius: 12px; padding: 25px;">
+                    <h3 style="color: var(--green); font-size: 2.5rem; margin-bottom: 10px;" id="stats-upcoming">-</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Zukünftige Events</p>
+                </div>
+                <div style="background: rgba(0, 159, 226, 0.1); border: 1px solid var(--blue); border-radius: 12px; padding: 25px;">
+                    <h3 style="color: var(--blue); font-size: 2.5rem; margin-bottom: 10px;" id="stats-gallery">-</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Gallery Bilder</p>
+                </div>
+                <div style="background: rgba(205, 17, 81, 0.1); border: 1px solid var(--red); border-radius: 12px; padding: 25px;">
+                    <h3 style="color: var(--red); font-size: 2.5rem; margin-bottom: 10px;" id="stats-blocked">-</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Geblockte Termine</p>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px;">
+                    <h3 style="margin-bottom: 20px; color: var(--orange);">Event Kategorien</h3>
+                    <div id="category-stats"></div>
+                </div>
+                <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px;">
+                    <h3 style="margin-bottom: 20px; color: var(--green);">Nächste Events</h3>
+                    <div id="next-events-list"></div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding: 20px;">
+                <button class="btn btn-primary" onclick="downloadBackup()" style="padding: 15px 40px; font-size: 16px;">
+                    💾 Backup als ZIP herunterladen
+                </button>
+            </div>
+        </div>
+        
+        <!-- Kalender Tab -->
+        <div id="calendar-tab" class="tab-content">
+            <div class="calendar-view-header" style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <h2 id="calendarEditorTitle" style="font-size: 1.8rem; font-weight: 300; color: var(--white);">Januar 2026</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="changeCalendarMonth(-1)">‹ Zurück</button>
+                        <button class="btn btn-primary" onclick="goToToday()">Heute</button>
+                        <button class="btn btn-primary" onclick="changeCalendarMonth(1)">Weiter ›</button>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="filter-future" checked onchange="filterCalendarEvents()">
+                        <span>Nur zukünftige Events</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <div style="min-width: 800px;">
+                    <div class="calendar-grid" id="calendarEditorGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;"></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; font-size: 14px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 20px; height: 20px; background: linear-gradient(135deg, var(--blue), var(--blue)); border-radius: 3px;"></div>
+                    <span>Öffentliches Event</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 20px; height: 20px; background: rgba(205, 17, 81, 0.3); border: 1px solid var(--red); border-radius: 3px;"></div>
+                    <span>Privat / Geblockt</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 20px; height: 20px; background: rgba(174, 198, 16, 0.1); border: 2px solid var(--green); border-radius: 3px;"></div>
+                    <span>Heute</span>
+                </div>
+            </div>
+        </div>
+        
         <!-- Events Tab -->
-        <div id="events-tab" class="tab-content active">
+        <div id="events-tab" class="tab-content">
+            <div style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px; margin-bottom: 12px;">
+                    <input type="text" id="search-events" placeholder="Suchen..." 
+                           style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
+                           oninput="applyEventsFilters()">
+                    <select id="filter-category" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyEventsFilters()">
+                        <option value="all">Alle Kategorien</option>
+                        <option value="party">Party</option>
+                        <option value="business">Business</option>
+                        <option value="culture">Kultur</option>
+                        <option value="workshop">Workshop</option>
+                    </select>
+                    <select id="sort-events" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyEventsFilters()">
+                        <option value="date">Nach Datum</option>
+                        <option value="title">Nach Titel</option>
+                        <option value="category">Nach Kategorie</option>
+                    </select>
+                </div>
+            </div>
+            
             <div class="list-controls">
                 <button class="btn btn-success" onclick="openEventModal()">Neu</button>
                 <button class="btn btn-primary" onclick="editSelectedEvent()">Bearbeiten</button>
-                <button class="btn btn-danger" onclick="deleteSelectedEvent()">Löschen</button>
+                <button class="btn btn-primary" onclick="duplicateSelected('events')" title="Event duplizieren">Duplizieren</button>
+                <button class="btn btn-danger" onclick="deleteSelected('events')">Ausgewählte löschen</button>
+                <button class="btn btn-secondary" onclick="undo()" title="Rückgängig (Strg+Z)">↶ Undo</button>
+                <button class="btn btn-secondary" onclick="redo()" title="Wiederholen (Strg+Y)">↷ Redo</button>
+                <label style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="select-all-events" onchange="toggleSelectAll('events')">
+                    <span>Alle auswählen</span>
+                </label>
             </div>
             <ul id="events-list" class="item-list"></ul>
+            
+            <div id="recent-changes" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Letzte Änderungen:</h4>
+                <div id="recent-changes-list" style="font-size: 0.85rem; color: rgba(255,255,255,0.6);"></div>
+            </div>
         </div>
         
         <!-- Private Veranstaltungen Tab -->
         <div id="blocked-tab" class="tab-content">
+            <div style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
+                <input type="text" id="search-blocked" placeholder="Nach Datum oder Grund suchen..." 
+                       style="width: 100%; padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
+                       oninput="applyBlockedFilters()">
+            </div>
+            
             <div class="list-controls">
                 <button class="btn btn-success" onclick="openBlockedModal()">Neu</button>
                 <button class="btn btn-primary" onclick="editSelectedBlocked()">Bearbeiten</button>
@@ -580,10 +903,34 @@ HTML_TEMPLATE = """
         
         <!-- Gallery Tab -->
         <div id="gallery-tab" class="tab-content">
+            <div style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px;">
+                    <input type="text" id="search-gallery" placeholder="Suchen..." 
+                           style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
+                           oninput="applyGalleryFilters()">
+                    <select id="filter-gallery-category" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyGalleryFilters()">
+                        <option value="all">Alle Kategorien</option>
+                        <option value="events">Events</option>
+                        <option value="location">Location</option>
+                        <option value="party">Party</option>
+                        <option value="business">Business</option>
+                    </select>
+                    <select id="sort-gallery" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyGalleryFilters()">
+                        <option value="date">Nach Datum</option>
+                        <option value="title">Nach Titel</option>
+                        <option value="category">Nach Kategorie</option>
+                    </select>
+                </div>
+            </div>
+            
             <div class="list-controls">
                 <button class="btn btn-success" onclick="openGalleryModal()">Neu</button>
                 <button class="btn btn-primary" onclick="editSelectedGallery()">Bearbeiten</button>
-                <button class="btn btn-danger" onclick="deleteSelectedGallery()">Löschen</button>
+                <button class="btn btn-danger" onclick="deleteSelected('gallery')">Ausgewählte löschen</button>
+                <label style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="select-all-gallery" onchange="toggleSelectAll('gallery')">
+                    <span>Alle auswählen</span>
+                </label>
             </div>
             <ul id="gallery-list" class="item-list"></ul>
         </div>
@@ -773,6 +1120,23 @@ HTML_TEMPLATE = """
         let selectedEventIndex = null;
         let selectedGalleryIndex = null;
         let selectedBlockedIndex = null;
+        let selectedEventsIndices = [];
+        let selectedGalleryIndices = [];
+        let currentCalendarDate = new Date();
+        let calendarFilterFuture = true;
+        
+        // Undo/Redo
+        let undoStack = [];
+        let redoStack = [];
+        const MAX_UNDO = 20;
+        
+        // Suche & Filter
+        let searchTerm = '';
+        let currentCategory = 'all';
+        let currentSort = 'date';  // 'date', 'title', 'category'
+        
+        // Letzte Änderungen
+        let recentChanges = [];
         
         // Tab Switching
         function switchTab(tabName) {
@@ -781,6 +1145,15 @@ HTML_TEMPLATE = """
             
             event.target.classList.add('active');
             document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Dashboard laden beim Öffnen
+            if (tabName === 'dashboard') {
+                loadDashboardStats();
+            }
+            // Kalender rendern beim Öffnen
+            if (tabName === 'calendar') {
+                renderEditorCalendar();
+            }
         }
         
         // Alerts
@@ -826,69 +1199,47 @@ HTML_TEMPLATE = """
                 renderBlockedList();
                 renderGalleryList();
                 populateEventDropdown();
+                
+                // Dashboard aktualisieren wenn aktiv
+                if (document.getElementById('dashboard-tab').classList.contains('active')) {
+                    loadDashboardStats();
+                }
+                
+                // Kalender aktualisieren wenn aktiv
+                if (document.getElementById('calendar-tab').classList.contains('active')) {
+                    renderEditorCalendar();
+                }
             }
         }
         
         // Events Liste rendern
         function renderEventsList() {
-            const list = document.getElementById('events-list');
-            list.innerHTML = '';
-            
-            eventsData.forEach((event, index) => {
-                if (event.type === 'event') {
-                    const li = document.createElement('li');
-                    li.textContent = `${event.id}: ${event.title.de}`;
-                    li.onclick = () => selectEvent(index);
-                    if (index === selectedEventIndex) li.classList.add('selected');
-                    list.appendChild(li);
-                }
-            });
+            applyEventsFilters();  // Nutzt jetzt Filter-System
         }
         
         function selectEvent(index) {
             selectedEventIndex = index;
-            renderEventsList();
+            applyEventsFilters();
         }
         
         // Blocked/Private Veranstaltungen Liste rendern
         function renderBlockedList() {
-            const list = document.getElementById('blocked-list');
-            list.innerHTML = '';
-            
-            eventsData.forEach((item, index) => {
-                if (item.type === 'blocked') {
-                    const li = document.createElement('li');
-                    const reason = item.reason || 'Private Veranstaltung';
-                    li.textContent = `${item.id}: ${item.date} (${item.startTime}-${item.endTime}) - ${reason}`;
-                    li.onclick = () => selectBlocked(index);
-                    if (index === selectedBlockedIndex) li.classList.add('selected');
-                    list.appendChild(li);
-                }
-            });
+            applyBlockedFilters();  // Nutzt jetzt Filter-System
         }
         
         function selectBlocked(index) {
             selectedBlockedIndex = index;
-            renderBlockedList();
+            applyBlockedFilters();
         }
         
         // Gallery Liste rendern
         function renderGalleryList() {
-            const list = document.getElementById('gallery-list');
-            list.innerHTML = '';
-            
-            galleryData.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.textContent = `${item.id}: ${item.title.de}`;
-                li.onclick = () => selectGallery(index);
-                if (index === selectedGalleryIndex) li.classList.add('selected');
-                list.appendChild(li);
-            });
+            applyGalleryFilters();  // Nutzt jetzt Filter-System
         }
         
         function selectGallery(index) {
             selectedGalleryIndex = index;
-            renderGalleryList();
+            applyGalleryFilters();
         }
         
         // Event Dropdown für Gallery
@@ -1209,8 +1560,633 @@ HTML_TEMPLATE = """
             }
         }
         
+        // ========================================
+        // NEUE FUNKTIONEN: Dashboard, Kalender, Mehrfachauswahl
+        // ========================================
+        
+        // Dashboard Statistiken laden
+        async function loadDashboardStats() {
+            const response = await fetch('/get_dashboard_stats');
+            const data = await response.json();
+            
+            if (data.success) {
+                const stats = data.stats;
+                document.getElementById('stats-total-events').textContent = stats.total_events;
+                document.getElementById('stats-upcoming').textContent = stats.upcoming_events;
+                document.getElementById('stats-gallery').textContent = stats.gallery_items;
+                document.getElementById('stats-blocked').textContent = stats.blocked_dates;
+                
+                // Kategorien
+                let catHtml = '';
+                const catColors = {
+                    'party': 'var(--orange)',
+                    'business': 'var(--red)',
+                    'culture': 'var(--blue)',
+                    'workshop': 'var(--green)'
+                };
+                for (const [cat, count] of Object.entries(stats.categories)) {
+                    const color = catColors[cat] || 'var(--white)';
+                    catHtml += `
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <span style="text-transform: capitalize;">${cat}</span>
+                            <span style="color: ${color}; font-weight: 500;">${count}</span>
+                        </div>
+                    `;
+                }
+                document.getElementById('category-stats').innerHTML = catHtml || '<p style="color: rgba(255,255,255,0.5);">Keine Events vorhanden</p>';
+                
+                // Nächste Events
+                let nextHtml = '';
+                stats.next_events.forEach(event => {
+                    nextHtml += `
+                        <div style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+                            <div style="font-weight: 500;">${event.title}</div>
+                            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">📅 ${event.date}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById('next-events-list').innerHTML = nextHtml || '<p style="color: rgba(255,255,255,0.5);">Keine kommenden Events</p>';
+            }
+        }
+        
+        // Backup herunterladen
+        function downloadBackup() {
+            window.location.href = '/create_backup';
+            showAlert('Backup wird erstellt und heruntergeladen...');
+        }
+        
+        // Kalender rendern (Editor)
+        function renderEditorCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const today = new Date();
+            
+            const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+            document.getElementById('calendarEditorTitle').textContent = `${monthNames[month]} ${year}`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDay = firstDay === 0 ? 6 : firstDay - 1;
+            
+            let html = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].map(d => 
+                `<div style="background: rgba(252,171,20,0.2); padding: 12px; text-align: center; font-weight: 500;">${d}</div>`
+            ).join('');
+            
+            // Vorheriger Monat
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            for (let i = startDay; i > 0; i--) {
+                html += `<div style="background: var(--black); min-height: 100px; padding: 8px; opacity: 0.3;">
+                    <div>${prevMonthDays - i + 1}</div>
+                </div>`;
+            }
+            
+            // Aktueller Monat
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const cellDate = new Date(year, month, day);
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+                
+                // Filter: Nur zukünftige Events
+                const filterFuture = document.getElementById('filter-future')?.checked || false;
+                
+                let dayEvents = eventsData.filter(e => e.type === 'event' && e.date === dateStr);
+                const dayBlocked = eventsData.filter(e => e.type === 'blocked' && e.date === dateStr);
+                
+                // Zeitfilter anwenden
+                if (filterFuture && cellDate < today) {
+                    dayEvents = [];
+                }
+                
+                let classes = 'background: var(--black); min-height: 100px; padding: 8px; border: 1px solid var(--border); cursor: pointer;';
+                if (isToday) classes += ' border: 2px solid var(--green);';
+                
+                html += `<div style="${classes}" 
+                              ondrop="dropEvent(event, '${dateStr}')" 
+                              ondragover="allowDrop(event)"
+                              data-date="${dateStr}">
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">${day}</div>
+                    ${dayEvents.map(e => `
+                        <div style="background: var(--blue); padding: 4px; font-size: 0.7rem; margin-bottom: 3px; border-radius: 3px; cursor: move;" 
+                             draggable="true"
+                             ondragstart="dragEvent(event, ${e.id})"
+                             onclick="jumpToEvent(${e.id}, 'events')" 
+                             title="${e.title.de}">
+                            ${e.title.de}
+                        </div>
+                    `).join('')}
+                    ${dayBlocked.map(b => `
+                        <div style="background: rgba(205,17,81,0.3); padding: 4px; font-size: 0.65rem; border-radius: 3px;">
+                            ${b.reason || 'Geblockt'}
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+            
+            // Nächster Monat
+            const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+            const nextMonthDays = totalCells - (startDay + daysInMonth);
+            for (let i = 1; i <= nextMonthDays; i++) {
+                html += `<div style="background: var(--black); min-height: 100px; padding: 8px; opacity: 0.3;">
+                    <div>${i}</div>
+                </div>`;
+            }
+            
+            document.getElementById('calendarEditorGrid').innerHTML = html;
+        }
+        
+        // Drag & Drop im Kalender
+        let draggedEventId = null;
+        
+        function dragEvent(event, eventId) {
+            draggedEventId = eventId;
+            event.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function allowDrop(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        }
+        
+        async function dropEvent(event, newDate) {
+            event.preventDefault();
+            if (!draggedEventId) return;
+            
+            // Finde Event und aktualisiere Datum
+            const eventIndex = eventsData.findIndex(e => e.id === draggedEventId);
+            if (eventIndex === -1) return;
+            
+            const oldDate = eventsData[eventIndex].date;
+            if (oldDate === newDate) return;
+            
+            if (!confirm(`Event "${eventsData[eventIndex].title.de}" von ${oldDate} nach ${newDate} verschieben?`)) {
+                draggedEventId = null;
+                return;
+            }
+            
+            // Datum aktualisieren
+            eventsData[eventIndex].date = newDate;
+            
+            // Speichern
+            const response = await fetch('/save_event', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    index: eventIndex,
+                    id: eventsData[eventIndex].id,
+                    title_de: eventsData[eventIndex].title.de,
+                    title_en: eventsData[eventIndex].title.en,
+                    description_de: eventsData[eventIndex].description.de,
+                    description_en: eventsData[eventIndex].description.en,
+                    date: newDate,
+                    time: eventsData[eventIndex].time,
+                    category: eventsData[eventIndex].category,
+                    price: eventsData[eventIndex].price,
+                    ticketUrl: eventsData[eventIndex].ticketUrl
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                showAlert(`Event nach ${newDate} verschoben!`);
+                await loadData();
+            } else {
+                showAlert('Fehler beim Verschieben', 'error');
+            }
+            
+            draggedEventId = null;
+        }
+        
+        function changeCalendarMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            renderEditorCalendar();
+        }
+        
+        function goToToday() {
+            currentCalendarDate = new Date();
+            renderEditorCalendar();
+        }
+        
+        function filterCalendarEvents() {
+            renderEditorCalendar();
+        }
+        
+        function jumpToEvent(eventId, tabName) {
+            switchTab(tabName);
+            setTimeout(() => {
+                const index = eventsData.findIndex(e => e.id === eventId);
+                if (index !== -1) {
+                    selectedEventIndex = index;
+                    renderEventsList();
+                    document.getElementById('events-list').children[index]?.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+            }, 100);
+        }
+        
+        // Mehrfachauswahl
+        function toggleSelectAll(type) {
+            const checkbox = document.getElementById(`select-all-${type}`);
+            const checkboxes = document.querySelectorAll(`#${type}-list input[type="checkbox"]`);
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateSelectedIndices(type);
+        }
+        
+        function updateSelectedIndices(type) {
+            if (type === 'events') {
+                selectedEventsIndices = [];
+                document.querySelectorAll('#events-list input[type="checkbox"]:checked').forEach(cb => {
+                    selectedEventsIndices.push(parseInt(cb.dataset.index));
+                });
+            } else if (type === 'gallery') {
+                selectedGalleryIndices = [];
+                document.querySelectorAll('#gallery-list input[type="checkbox"]:checked').forEach(cb => {
+                    selectedGalleryIndices.push(parseInt(cb.dataset.index));
+                });
+            }
+        }
+        
+        async function deleteSelected(type) {
+            const indices = type === 'events' ? selectedEventsIndices : selectedGalleryIndices;
+            
+            if (indices.length === 0) {
+                showAlert('Bitte mindestens einen Eintrag auswählen', 'error');
+                return;
+            }
+            
+            if (!confirm(`${indices.length} Einträge wirklich löschen?`)) return;
+            
+            const response = await fetch('/delete_multiple', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({indices, type})
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                showAlert(`${result.deleted} Einträge gelöscht!`);
+                if (type === 'events') selectedEventsIndices = [];
+                else selectedGalleryIndices = [];
+                await loadData();
+            } else {
+                showAlert(result.error || 'Fehler beim Löschen', 'error');
+            }
+        }
+        
+        async function duplicateSelected(type) {
+            if (type !== 'events') return;
+            
+            if (selectedEventIndex === null) {
+                showAlert('Bitte ein Event auswählen', 'error');
+                return;
+            }
+            
+            const response = await fetch('/duplicate_event', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({index: selectedEventIndex})
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                showAlert('Event dupliziert!');
+                await loadData();
+            } else {
+                showAlert(result.error || 'Fehler beim Duplizieren', 'error');
+            }
+        }
+        
+        // ========================================
+        // UNDO/REDO SYSTEM
+        // ========================================
+        
+        function saveState(action) {
+            const state = {
+                events: JSON.parse(JSON.stringify(eventsData)),
+                gallery: JSON.parse(JSON.stringify(galleryData)),
+                timestamp: new Date().toISOString(),
+                action: action
+            };
+            
+            undoStack.push(state);
+            if (undoStack.length > MAX_UNDO) {
+                undoStack.shift();
+            }
+            redoStack = [];  // Clear redo stack on new action
+            
+            // Letzte Änderungen tracken
+            addRecentChange(action);
+        }
+        
+        async function undo() {
+            if (undoStack.length === 0) {
+                showAlert('Nichts zum Rückgängigmachen', 'error');
+                return;
+            }
+            
+            const currentState = {
+                events: JSON.parse(JSON.stringify(eventsData)),
+                gallery: JSON.parse(JSON.stringify(galleryData))
+            };
+            redoStack.push(currentState);
+            
+            const previousState = undoStack.pop();
+            eventsData = previousState.events;
+            galleryData = previousState.gallery;
+            
+            // Save to server
+            await saveAllData();
+            renderEventsList();
+            renderBlockedList();
+            renderGalleryList();
+            
+            showAlert('Rückgängig: ' + previousState.action);
+        }
+        
+        async function redo() {
+            if (redoStack.length === 0) {
+                showAlert('Nichts zum Wiederholen', 'error');
+                return;
+            }
+            
+            const currentState = {
+                events: JSON.parse(JSON.stringify(eventsData)),
+                gallery: JSON.parse(JSON.stringify(galleryData)),
+                action: 'Redo'
+            };
+            undoStack.push(currentState);
+            
+            const nextState = redoStack.pop();
+            eventsData = nextState.events;
+            galleryData = nextState.gallery;
+            
+            // Save to server
+            await saveAllData();
+            renderEventsList();
+            renderBlockedList();
+            renderGalleryList();
+            
+            showAlert('Wiederhergestellt');
+        }
+        
+        async function saveAllData() {
+            // Events speichern
+            const eventsPath = document.getElementById('projectPath').value + '/events.json';
+            await fetch('/save_event', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({events: eventsData})
+            });
+            
+            // Gallery speichern
+            await fetch('/save_gallery', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({gallery: galleryData})
+            });
+        }
+        
+        // Letzte Änderungen
+        function addRecentChange(action) {
+            const change = {
+                action: action,
+                timestamp: new Date().toLocaleString('de-DE'),
+                time: Date.now()
+            };
+            
+            recentChanges.unshift(change);
+            if (recentChanges.length > 10) {
+                recentChanges = recentChanges.slice(0, 10);
+            }
+            
+            updateRecentChangesDisplay();
+        }
+        
+        function updateRecentChangesDisplay() {
+            const container = document.getElementById('recent-changes-list');
+            if (!container) return;
+            
+            if (recentChanges.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.4);">Keine Änderungen</p>';
+                return;
+            }
+            
+            container.innerHTML = recentChanges.map(change => `
+                <div style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span style="color: var(--orange);">${change.action}</span>
+                    <span style="float: right; font-size: 0.8rem;">${change.timestamp}</span>
+                </div>
+            `).join('');
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    undo();
+                } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
+                    e.preventDefault();
+                    redo();
+                }
+            }
+        });
+        
+        // ========================================
+        // SUCHE, FILTER & SORTIERUNG
+        // ========================================
+        
+        function applyEventsFilters() {
+            const search = document.getElementById('search-events').value.toLowerCase();
+            const category = document.getElementById('filter-category').value;
+            const sort = document.getElementById('sort-events').value;
+            
+            // Filter
+            let filtered = eventsData.filter(e => {
+                if (e.type !== 'event') return false;
+                
+                const matchesSearch = search === '' || 
+                    e.title.de.toLowerCase().includes(search) ||
+                    e.title.en.toLowerCase().includes(search) ||
+                    e.description.de.toLowerCase().includes(search) ||
+                    e.description.en.toLowerCase().includes(search);
+                
+                const matchesCategory = category === 'all' || e.category === category;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            // Sortierung
+            filtered.sort((a, b) => {
+                if (sort === 'date') {
+                    return new Date(a.date) - new Date(b.date);
+                } else if (sort === 'title') {
+                    return a.title.de.localeCompare(b.title.de);
+                } else if (sort === 'category') {
+                    return a.category.localeCompare(b.category);
+                }
+                return 0;
+            });
+            
+            // Render
+            const list = document.getElementById('events-list');
+            list.innerHTML = '';
+            
+            filtered.forEach((event) => {
+                const index = eventsData.indexOf(event);
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.alignItems = 'center';
+                li.style.gap = '12px';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.index = index;
+                checkbox.checked = selectedEventsIndices.includes(index);
+                checkbox.onclick = (e) => {
+                    e.stopPropagation();
+                    updateSelectedIndices('events');
+                };
+                li.appendChild(checkbox);
+                
+                const text = document.createElement('span');
+                text.textContent = `${event.id}: ${event.title.de} (${event.date})`;
+                text.style.flex = '1';
+                text.onclick = () => selectEvent(index);
+                li.appendChild(text);
+                
+                if (index === selectedEventIndex) li.classList.add('selected');
+                list.appendChild(li);
+            });
+        }
+        
+        function applyGalleryFilters() {
+            const search = document.getElementById('search-gallery').value.toLowerCase();
+            const category = document.getElementById('filter-gallery-category').value;
+            const sort = document.getElementById('sort-gallery').value;
+            
+            let filtered = galleryData.filter(item => {
+                const matchesSearch = search === '' ||
+                    item.title.de.toLowerCase().includes(search) ||
+                    item.title.en.toLowerCase().includes(search);
+                
+                const matchesCategory = category === 'all' || item.category === category;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            filtered.sort((a, b) => {
+                if (sort === 'date') {
+                    return new Date(a.date) - new Date(b.date);
+                } else if (sort === 'title') {
+                    return a.title.de.localeCompare(b.title.de);
+                } else if (sort === 'category') {
+                    return a.category.localeCompare(b.category);
+                }
+                return 0;
+            });
+            
+            const list = document.getElementById('gallery-list');
+            list.innerHTML = '';
+            
+            filtered.forEach((item) => {
+                const index = galleryData.indexOf(item);
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.alignItems = 'center';
+                li.style.gap = '12px';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.index = index;
+                checkbox.checked = selectedGalleryIndices.includes(index);
+                checkbox.onclick = (e) => {
+                    e.stopPropagation();
+                    updateSelectedIndices('gallery');
+                };
+                li.appendChild(checkbox);
+                
+                const text = document.createElement('span');
+                text.textContent = `${item.id}: ${item.title.de}`;
+                text.style.flex = '1';
+                text.onclick = () => selectGallery(index);
+                li.appendChild(text);
+                
+                if (index === selectedGalleryIndex) li.classList.add('selected');
+                list.appendChild(li);
+            });
+        }
+        
+        function applyBlockedFilters() {
+            const search = document.getElementById('search-blocked').value.toLowerCase();
+            
+            const filtered = eventsData.filter(item => {
+                if (item.type !== 'blocked') return false;
+                
+                const reason = item.reason || 'Private Veranstaltung';
+                return search === '' || 
+                    item.date.includes(search) ||
+                    reason.toLowerCase().includes(search);
+            });
+            
+            const list = document.getElementById('blocked-list');
+            list.innerHTML = '';
+            
+            filtered.forEach((item) => {
+                const index = eventsData.indexOf(item);
+                const li = document.createElement('li');
+                const reason = item.reason || 'Private Veranstaltung';
+                li.textContent = `${item.id}: ${item.date} (${item.startTime}-${item.endTime}) - ${reason}`;
+                li.onclick = () => selectBlocked(index);
+                if (index === selectedBlockedIndex) li.classList.add('selected');
+                list.appendChild(li);
+            });
+        }
+        
         // Initial load
         loadData();
+        loadDashboardStats();  // Dashboard beim Start laden
+    </script>
+    
+    <!-- Vorschau Modal -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-container">
+            <div class="preview-header">
+                <h2>Webseiten-Vorschau</h2>
+                <div class="preview-tabs">
+                    <button class="preview-tab active" onclick="switchPreview('events')">Events Ansicht</button>
+                    <button class="preview-tab" onclick="switchPreview('gallery')">Gallery Ansicht</button>
+                </div>
+                <button class="preview-close" onclick="closePreview()">✕ Schließen</button>
+            </div>
+            <iframe id="previewIframe" class="preview-iframe"></iframe>
+        </div>
+    </div>
+    
+    <script>
+        function openPreview() {
+            document.getElementById('previewModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            switchPreview('events');
+        }
+        
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('previewIframe').src = 'about:blank';
+        }
+        
+        function switchPreview(type) {
+            document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const iframe = document.getElementById('previewIframe');
+            iframe.src = `/preview/${type}`;
+        }
+        
+        // ESC zum Schließen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('previewModal').classList.contains('active')) {
+                closePreview();
+            }
+        });
     </script>
 </body>
 </html>
@@ -1460,6 +2436,537 @@ def delete_gallery():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+
+
+# --------------------------------------
+# Neue Funktionen: Backup, Dashboard, Duplikate, Mehrfachauswahl
+# --------------------------------------
+
+@app.route('/create_backup')
+def create_backup():
+    """Erstellt ZIP-Backup des gesamten Projekts"""
+    if not PROJECT_PATH:
+        return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
+
+    try:
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        memory_file = io.BytesIO()
+
+        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+            # JSON Dateien
+            for json_file in ['events.json', 'gallery.json']:
+                file_path = os.path.join(PROJECT_PATH, json_file)
+                if os.path.exists(file_path):
+                    zf.write(file_path, json_file)
+
+            # Bilder
+            for folder in ['img', 'gallery-images']:
+                folder_path = os.path.join(PROJECT_PATH, folder)
+                if os.path.exists(folder_path):
+                    for root, dirs, files in os.walk(folder_path):
+                        for file in files:
+                            file_path = os.path.join(root, file)
+                            arcname = os.path.relpath(file_path, PROJECT_PATH)
+                            zf.write(file_path, arcname)
+
+        memory_file.seek(0)
+        return send_file(
+            memory_file,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=f'area710_backup_{timestamp}.zip'
+        )
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/get_dashboard_stats')
+def get_dashboard_stats():
+    """Liefert Statistiken für Dashboard"""
+    if not PROJECT_PATH:
+        return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
+
+    try:
+        events_path = os.path.join(PROJECT_PATH, "events.json")
+        gallery_path = os.path.join(PROJECT_PATH, "gallery.json")
+
+        events = load_json(events_path)
+        gallery = load_json(gallery_path)
+
+        # Events nach Typ filtern
+        public_events = [e for e in events if e.get('type') == 'event']
+        blocked_events = [e for e in events if e.get('type') == 'blocked']
+
+        # Kategorien zählen
+        categories = {}
+        for event in public_events:
+            cat = event.get('category', 'unknown')
+            categories[cat] = categories.get(cat, 0) + 1
+
+        # Nächstes Event finden
+        from datetime import datetime as dt
+        today = dt.now().date()
+        upcoming = []
+        past = []
+        for event in public_events:
+            try:
+                event_date = dt.strptime(event.get('date', ''), '%Y-%m-%d').date()
+                event_info = {
+                    'id': event.get('id'),
+                    'title': event['title']['de'],
+                    'date': event['date'],
+                    'category': event.get('category', '')
+                }
+                if event_date >= today:
+                    upcoming.append(event_info)
+                else:
+                    past.append(event_info)
+            except:
+                pass
+
+        upcoming.sort(key=lambda x: x['date'])
+        past.sort(key=lambda x: x['date'], reverse=True)
+
+        return jsonify({
+            'success': True,
+            'stats': {
+                'total_events': len(public_events),
+                'upcoming_events': len(upcoming),
+                'past_events': len(past),
+                'blocked_dates': len(blocked_events),
+                'gallery_items': len(gallery),
+                'categories': categories,
+                'next_events': upcoming[:5],
+                'recent_past': past[:3]
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/duplicate_event', methods=['POST'])
+def duplicate_event():
+    """Dupliziert ein Event"""
+    if not PROJECT_PATH:
+        return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
+
+    try:
+        data = request.json
+        index = data.get('index')
+
+        events_path = os.path.join(PROJECT_PATH, "events.json")
+        events = load_json(events_path)
+
+        if index is None or index >= len(events):
+            return jsonify({'success': False, 'error': 'Ungültiger Index'})
+
+        # Event duplizieren
+        original = events[index]
+        duplicate = json.loads(json.dumps(original))  # Deep copy
+
+        # Neue ID vergeben
+        duplicate['id'] = max([e.get('id', 0) for e in events] + [0]) + 1
+
+        # Titel anpassen
+        if 'title' in duplicate and isinstance(duplicate['title'], dict):
+            duplicate['title']['de'] = duplicate['title']['de'] + ' (Kopie)'
+            duplicate['title']['en'] = duplicate['title']['en'] + ' (Copy)'
+
+        events.append(duplicate)
+        save_json(events_path, events)
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/delete_multiple', methods=['POST'])
+def delete_multiple():
+    """Löscht mehrere Events/Gallery Items"""
+    if not PROJECT_PATH:
+        return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
+
+    try:
+        data = request.json
+        indices = data.get('indices', [])
+        data_type = data.get('type', 'events')  # 'events' oder 'gallery'
+
+        if data_type == 'events':
+            file_path = os.path.join(PROJECT_PATH, "events.json")
+        else:
+            file_path = os.path.join(PROJECT_PATH, "gallery.json")
+
+        items = load_json(file_path)
+
+        # Sortiere Indices absteigend, damit das Löschen funktioniert
+        for index in sorted(indices, reverse=True):
+            if 0 <= index < len(items):
+                items.pop(index)
+
+        save_json(file_path, items)
+        return jsonify({'success': True, 'deleted': len(indices)})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/reorder_items', methods=['POST'])
+def reorder_items():
+    """Ändert die Reihenfolge von Items"""
+    if not PROJECT_PATH:
+        return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
+
+    try:
+        data = request.json
+        new_order = data.get('order', [])  # Liste von IDs in neuer Reihenfolge
+        data_type = data.get('type', 'events')
+
+        if data_type == 'events':
+            file_path = os.path.join(PROJECT_PATH, "events.json")
+        else:
+            file_path = os.path.join(PROJECT_PATH, "gallery.json")
+
+        items = load_json(file_path)
+
+        # Neu sortieren basierend auf der ID-Reihenfolge
+        reordered = []
+        for item_id in new_order:
+            for item in items:
+                if item.get('id') == item_id:
+                    reordered.append(item)
+                    break
+
+        # Füge Items hinzu die nicht in der Order-Liste waren
+        for item in items:
+            if item.get('id') not in new_order:
+                reordered.append(item)
+
+        save_json(file_path, reordered)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
+# --------------------------------------
+# Vorschau-Routes
+# --------------------------------------
+@app.route('/preview/<preview_type>')
+def preview(preview_type):
+    if not PROJECT_PATH:
+        return "<h1 style='color: white; text-align: center; padding: 50px; font-family: Roboto, sans-serif; background: #000;'>Bitte zuerst einen Projektpfad setzen</h1>"
+
+    events_path = os.path.join(PROJECT_PATH, "events.json")
+    gallery_path = os.path.join(PROJECT_PATH, "gallery.json")
+
+    events = load_json(events_path)
+    gallery = load_json(gallery_path)
+
+    if preview_type == 'events':
+        return render_template_string(EVENTS_PREVIEW_TEMPLATE, events=json.dumps(events))
+    elif preview_type == 'gallery':
+        return render_template_string(GALLERY_PREVIEW_TEMPLATE,
+                                      gallery=json.dumps(gallery),
+                                      events=json.dumps(events))
+    else:
+        return "Invalid preview type", 404
+
+
+@app.route('/project-files/<path:filename>')
+def serve_project_file(filename):
+    """Liefert Bilder und andere Dateien aus dem Projektordner"""
+    if not PROJECT_PATH:
+        return "No project path set", 404
+
+    try:
+        # Sicherheit: Verhindere Directory Traversal
+        safe_path = os.path.normpath(os.path.join(PROJECT_PATH, filename))
+        if not safe_path.startswith(os.path.normpath(PROJECT_PATH)):
+            return "Access denied", 403
+
+        return send_from_directory(PROJECT_PATH, filename)
+    except Exception as e:
+        print(f"Error serving file {filename}: {e}")
+        return "File not found", 404
+
+
+# Events Vorschau Template (vereinfachte Version der events.html)
+EVENTS_PREVIEW_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events Vorschau - area710</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --orange: #FCAB14; --red: #CD1151; --blue: #009FE2; --green: #AEC610;
+            --black: #000; --white: #fff; --gray: #222; --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--orange), var(--red), var(--blue), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        .event-card {
+            background: var(--gray);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .event-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: var(--orange);
+        }
+        .event-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .event-content { padding: 2rem; }
+        .event-category {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+        .event-category.party { background: rgba(252, 171, 20, 0.2); color: var(--orange); }
+        .event-category.business { background: rgba(205, 17, 81, 0.2); color: var(--red); }
+        .event-category.culture { background: rgba(0, 159, 226, 0.2); color: var(--blue); }
+        .event-category.workshop { background: rgba(174, 198, 16, 0.2); color: var(--green); }
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .event-date, .event-time {
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .event-description {
+            margin: 1rem 0;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .event-price {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .blocked-info {
+            background: rgba(205, 17, 81, 0.2);
+            border: 1px solid var(--red);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .blocked-info h3 {
+            color: var(--red);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Events Vorschau</h1>
+        <div class="events-grid" id="eventsGrid"></div>
+    </div>
+    <script>
+        const eventsData = {{ events|safe }};
+        const publicEvents = eventsData.filter(e => e.type === 'event');
+        
+        publicEvents.forEach(event => {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            card.innerHTML = `
+                <img src="/project-files/${event.image}" alt="${event.title.de}" class="event-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22350%22 height=%22250%22%3E%3Crect width=%22350%22 height=%22250%22 fill=%22%23222%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23fff%22%3EKein Bild%3C/text%3E%3C/svg%3E'">
+                <div class="event-content">
+                    <span class="event-category ${event.category}">${event.category}</span>
+                    <h3 class="event-title">${event.title.de}</h3>
+                    <div class="event-date">📅 ${event.date}</div>
+                    <div class="event-time">🕒 ${event.time}</div>
+                    <p class="event-description">${event.description.de}</p>
+                    <div class="event-footer">
+                        <span class="event-price">${event.price}</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('eventsGrid').appendChild(card);
+        });
+        
+        if (publicEvents.length === 0) {
+            document.getElementById('eventsGrid').innerHTML = '<div class="blocked-info"><h3>Keine Events vorhanden</h3><p>Erstellen Sie Ihr erstes Event im Editor!</p></div>';
+        }
+    </script>
+</body>
+</html>
+"""
+
+# Gallery Vorschau Template
+GALLERY_PREVIEW_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Vorschau - area710</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --orange: #FCAB14; --red: #CD1151; --blue: #009FE2; --green: #AEC610;
+            --black: #000; --white: #fff; --gray: #222; --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            padding: 40px 20px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--orange), var(--red), var(--blue), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: var(--gray);
+            border: 1px solid var(--border);
+            transition: all 0.4s ease;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+        .gallery-img-wrapper {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.1);
+        }
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        .gallery-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 20px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+        .gallery-category.events { background: rgba(252, 171, 20, 0.3); color: var(--orange); }
+        .gallery-category.location { background: rgba(205, 17, 81, 0.3); color: var(--red); }
+        .gallery-category.party { background: rgba(0, 159, 226, 0.3); color: var(--blue); }
+        .gallery-category.business { background: rgba(174, 198, 16, 0.3); color: var(--green); }
+        .gallery-title {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 0.3rem;
+        }
+        .gallery-date {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gallery Vorschau</h1>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+    <script>
+        const galleryData = {{ gallery|safe }};
+        const eventsData = {{ events|safe }};
+        
+        galleryData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'gallery-item';
+            card.innerHTML = `
+                <div class="gallery-img-wrapper">
+                    <img src="/project-files/${item.image}" alt="${item.title.de}" class="gallery-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect width=%22300%22 height=%22300%22 fill=%22%23222%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23fff%22%3EKein Bild%3C/text%3E%3C/svg%3E'">
+                    <div class="gallery-overlay">
+                        <span class="gallery-category ${item.category}">${item.category}</span>
+                        <div class="gallery-title">${item.title.de}</div>
+                        <div class="gallery-date">${item.date}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('galleryGrid').appendChild(card);
+        });
+        
+        if (galleryData.length === 0) {
+            document.getElementById('galleryGrid').innerHTML = '<div class="empty-state"><h3>Keine Gallery-Einträge vorhanden</h3><p>Erstellen Sie Ihren ersten Eintrag im Editor!</p></div>';
+        }
+    </script>
+</body>
+</html>
+"""
 
 # --------------------------------------
 # Browser öffnen
