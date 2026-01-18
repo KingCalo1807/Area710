@@ -3,15 +3,15 @@
         "id": 1,
         "type": "event",
         "title": {
-            "de": "u50 Platin Party",
-            "en": "u50 Platinum Party"
+            "de": "u55 Platin Party",
+            "en": "u55 Platinum Party"
         },
         "description": {
-            "de": "Die legendäre u30 Party ist zurück! Tanzt mit uns die ganze Nacht zu den besten Hits. DJ-Line-up, Drinks & unvergessliche Stimmung garantiert!",
-            "en": "The legendary u30 party is back! Dance with us all night to the best hits. DJ line-up, drinks & unforgettable atmosphere guaranteed!"
+            "de": "",
+            "en": ""
         },
         "category": "party",
-        "date": "2026-02-14",
+        "date": "2026-02-28",
         "time": "22:00",
         "price": "150€",
         "ticketUrl": "https://ticket.area710.de",
@@ -244,11 +244,11 @@
             "en": "u70 Platinum Party"
         },
         "description": {
-            "de": "test",
-            "en": "test"
+            "de": "",
+            "en": ""
         },
         "category": "workshop",
-        "date": "2026-02-14",
+        "date": "2026-02-07",
         "time": "20:32",
         "price": "150€",
         "ticketUrl": "https://ticket.area710.de",
@@ -286,5 +286,23 @@
         "price": "0€",
         "ticketUrl": "https://ticket.area710.de",
         "image": "img/Mercedes-Benz_CLA_AMG_Line_2019_Edition_Orange_Art_559670_1920x1080.jpg"
+    },
+    {
+        "id": 21,
+        "type": "event",
+        "title": {
+            "de": "Test2",
+            "en": "Test2"
+        },
+        "description": {
+            "de": "Test2",
+            "en": "Test2"
+        },
+        "category": "workshop",
+        "date": "2026-12-12",
+        "time": "12:00",
+        "price": "150€",
+        "ticketUrl": "https://ticket.area710.de",
+        "image": "img/abiklasse_2024.jpg"
     }
 ]
