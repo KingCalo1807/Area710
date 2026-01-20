@@ -20,6 +20,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 # Globale Variable für Projektpfad
 PROJECT_PATH = os.environ.get('PROJECT_PATH', None)
 
+
 # --------------------------------------
 # Hilfsfunktionen
 # --------------------------------------
@@ -34,6 +35,7 @@ def load_json(path):
             return []
     return []
 
+
 def save_json(path, data):
     """Speichert JSON mit Backup"""
     try:
@@ -46,6 +48,7 @@ def save_json(path, data):
     except Exception as e:
         print(f"Fehler beim Speichern: {e}")
         return False
+
 
 def copy_image(file, dest_folder, project_path):
     """Kopiert Bild in Zielordner und gibt relativen Pfad zurück"""
@@ -62,6 +65,7 @@ def copy_image(file, dest_folder, project_path):
         print(f"Fehler beim Kopieren des Bildes: {e}")
         return ""
 
+
 # --------------------------------------
 # HTML Template
 # --------------------------------------
@@ -73,6 +77,7 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Editor – Events & Gallery | area710</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="icon" type="image/png" href="/img/fav.png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -326,15 +331,24 @@ HTML_TEMPLATE = """
         }
 
         .item-list li {
-            padding: 16px 20px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
-            cursor: pointer;
+            cursor: default;
             transition: all 0.3s ease;
             position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .item-list li:last-child {
             border-bottom: none;
+        }
+
+        /* Label nimmt den ganzen Platz */
+        .item-list li label {
+            flex: 1;
+            margin: 0;
         }
 
         .item-list li::before {
@@ -696,40 +710,47 @@ HTML_TEMPLATE = """
                 text-align: center;
             }
         }
-        
+
         /* KALENDER STYLES */
         .calendar-grid div {
             transition: all 0.3s ease;
         }
-        
+
         .calendar-grid div:hover {
             background: rgba(255, 255, 255, 0.05) !important;
         }
-        
-        /* DRAG & DROP */
-        .item-list li {
+
+        /* DRAG & DROP - NUR für Kalender, NICHT für Listen */
+        .calendar-grid div[draggable="true"] {
             cursor: move;
-            transition: all 0.2s ease;
         }
-        
+
         .item-list li:hover {
             background: rgba(255, 255, 255, 0.05);
         }
-        
+
         .item-list li.dragging {
             opacity: 0.5;
         }
-        
+
         .item-list li.drag-over {
             border-top: 2px solid var(--orange);
         }
-        
+
+        /* Checkbox Styling */
+        .item-list input[type="checkbox"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
         /* SECONDARY BUTTON */
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.3);
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: var(--white);
@@ -747,14 +768,14 @@ HTML_TEMPLATE = """
 
     <div class="container">
         <h1>area710 JSON Editor</h1>
-        
+
         <div class="project-selector">
             <input type="text" id="projectPath" placeholder="Projektpfad eingeben (z.B. /Users/username/mein-projekt)" value="{{ project_path or '' }}">
             <button class="btn btn-primary" onclick="setProjectPath()">Pfad laden</button>
         </div>
-        
+
         <div id="alert"></div>
-        
+
         <div class="tabs">
             <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
             <button class="tab" onclick="switchTab('calendar')">Kalender</button>
@@ -762,7 +783,7 @@ HTML_TEMPLATE = """
             <button class="tab" onclick="switchTab('blocked')">Private Veranstaltungen</button>
             <button class="tab" onclick="switchTab('gallery')">Gallery</button>
         </div>
-        
+
         <!-- Dashboard Tab -->
         <div id="dashboard-tab" class="tab-content active">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
@@ -783,7 +804,7 @@ HTML_TEMPLATE = """
                     <p style="color: rgba(255,255,255,0.8);">Geblockte Termine</p>
                 </div>
             </div>
-            
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
                 <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px;">
                     <h3 style="margin-bottom: 20px; color: var(--orange);">Event Kategorien</h3>
@@ -794,14 +815,14 @@ HTML_TEMPLATE = """
                     <div id="next-events-list"></div>
                 </div>
             </div>
-            
+
             <div style="text-align: center; padding: 20px;">
                 <button class="btn btn-primary" onclick="downloadBackup()" style="padding: 15px 40px; font-size: 16px;">
                     💾 Backup als ZIP herunterladen
                 </button>
             </div>
         </div>
-        
+
         <!-- Kalender Tab -->
         <div id="calendar-tab" class="tab-content">
             <div class="calendar-view-header" style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
@@ -814,19 +835,19 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
                 <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <label style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="filter-future" checked onchange="filterCalendarEvents()">
                         <span>Nur zukünftige Events</span>
-                    </label>
+                    </div>
                 </div>
             </div>
-            
+
             <div style="overflow-x: auto;">
                 <div style="min-width: 800px;">
                     <div class="calendar-grid" id="calendarEditorGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;"></div>
                 </div>
             </div>
-            
+
             <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; font-size: 14px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 20px; height: 20px; background: linear-gradient(135deg, var(--blue), var(--blue)); border-radius: 3px;"></div>
@@ -842,57 +863,31 @@ HTML_TEMPLATE = """
                 </div>
             </div>
         </div>
-        
+
         <!-- Events Tab -->
         <div id="events-tab" class="tab-content">
             <div style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
-                <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px; margin-bottom: 12px;">
-                    <input type="text" id="search-events" placeholder="Suchen..." 
-                           style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
-                           oninput="applyEventsFilters()">
-                    <select id="filter-category" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyEventsFilters()">
-                        <option value="all">Alle Kategorien</option>
-                        <option value="party">Party</option>
-                        <option value="business">Business</option>
-                        <option value="culture">Kultur</option>
-                        <option value="workshop">Workshop</option>
-                    </select>
-                    <select id="sort-events" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyEventsFilters()">
-                        <option value="date">Nach Datum</option>
-                        <option value="title">Nach Titel</option>
-                        <option value="category">Nach Kategorie</option>
-                    </select>
-                </div>
+                <input type="text" id="search-events" placeholder="Suchen..."
+                       style="width: 100%; padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
+                       oninput="applyEventsFilters()">
             </div>
-            
+
             <div class="list-controls">
                 <button class="btn btn-success" onclick="openEventModal()">Neu</button>
                 <button class="btn btn-primary" onclick="editSelectedEvent()">Bearbeiten</button>
-                <button class="btn btn-primary" onclick="duplicateSelected('events')" title="Event duplizieren">Duplizieren</button>
-                <button class="btn btn-danger" onclick="deleteSelected('events')">Ausgewählte löschen</button>
-                <button class="btn btn-secondary" onclick="undo()" title="Rückgängig (Strg+Z)">↶ Undo</button>
-                <button class="btn btn-secondary" onclick="redo()" title="Wiederholen (Strg+Y)">↷ Redo</button>
-                <label style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="select-all-events" onchange="toggleSelectAll('events')">
-                    <span>Alle auswählen</span>
-                </label>
+                <button class="btn btn-danger" onclick="deleteSelectedEvent()">Löschen</button>
             </div>
             <ul id="events-list" class="item-list"></ul>
-            
-            <div id="recent-changes" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; max-height: 200px; overflow-y: auto;">
-                <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Letzte Änderungen:</h4>
-                <div id="recent-changes-list" style="font-size: 0.85rem; color: rgba(255,255,255,0.6);"></div>
-            </div>
         </div>
-        
+
         <!-- Private Veranstaltungen Tab -->
         <div id="blocked-tab" class="tab-content">
             <div style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
-                <input type="text" id="search-blocked" placeholder="Nach Datum oder Grund suchen..." 
+                <input type="text" id="search-blocked" placeholder="Nach Datum oder Grund suchen..."
                        style="width: 100%; padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
                        oninput="applyBlockedFilters()">
             </div>
-            
+
             <div class="list-controls">
                 <button class="btn btn-success" onclick="openBlockedModal()">Neu</button>
                 <button class="btn btn-primary" onclick="editSelectedBlocked()">Bearbeiten</button>
@@ -900,42 +895,24 @@ HTML_TEMPLATE = """
             </div>
             <ul id="blocked-list" class="item-list"></ul>
         </div>
-        
+
         <!-- Gallery Tab -->
         <div id="gallery-tab" class="tab-content">
             <div style="margin-bottom: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid var(--border);">
-                <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px;">
-                    <input type="text" id="search-gallery" placeholder="Suchen..." 
-                           style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
-                           oninput="applyGalleryFilters()">
-                    <select id="filter-gallery-category" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyGalleryFilters()">
-                        <option value="all">Alle Kategorien</option>
-                        <option value="events">Events</option>
-                        <option value="location">Location</option>
-                        <option value="party">Party</option>
-                        <option value="business">Business</option>
-                    </select>
-                    <select id="sort-gallery" style="padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;" onchange="applyGalleryFilters()">
-                        <option value="date">Nach Datum</option>
-                        <option value="title">Nach Titel</option>
-                        <option value="category">Nach Kategorie</option>
-                    </select>
-                </div>
+                <input type="text" id="search-gallery" placeholder="Suchen..."
+                       style="width: 100%; padding: 10px; background: var(--black); border: 1px solid var(--border); color: var(--white); border-radius: 6px;"
+                       oninput="applyGalleryFilters()">
             </div>
-            
+
             <div class="list-controls">
                 <button class="btn btn-success" onclick="openGalleryModal()">Neu</button>
                 <button class="btn btn-primary" onclick="editSelectedGallery()">Bearbeiten</button>
-                <button class="btn btn-danger" onclick="deleteSelected('gallery')">Ausgewählte löschen</button>
-                <label style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="select-all-gallery" onchange="toggleSelectAll('gallery')">
-                    <span>Alle auswählen</span>
-                </label>
+                <button class="btn btn-danger" onclick="deleteSelectedGallery()">Löschen</button>
             </div>
             <ul id="gallery-list" class="item-list"></ul>
         </div>
     </div>
-    
+
     <!-- Event Modal -->
     <div id="event-modal" class="modal">
         <div class="modal-content">
@@ -943,27 +920,27 @@ HTML_TEMPLATE = """
             <form id="event-form" onsubmit="saveEvent(event)">
                 <input type="hidden" id="event-id">
                 <input type="hidden" id="event-index">
-                
+
                 <div class="form-group">
                     <label>Titel (Deutsch)</label>
                     <input type="text" id="event-title-de" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Titel (English)</label>
                     <input type="text" id="event-title-en" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Beschreibung (Deutsch)</label>
                     <textarea id="event-desc-de"></textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Beschreibung (English)</label>
                     <textarea id="event-desc-en"></textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Kategorie</label>
                     <select id="event-category" required>
@@ -974,33 +951,33 @@ HTML_TEMPLATE = """
                         <option value="business">Business</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Datum (YYYY-MM-DD)</label>
                     <input type="date" id="event-date">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Zeit (HH:MM)</label>
                     <input type="time" id="event-time">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Preis</label>
                     <input type="text" id="event-price">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Ticket URL</label>
                     <input type="url" id="event-ticket-url">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Bild</label>
                     <input type="file" id="event-image" accept="image/*">
                     <small id="event-current-image"></small>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" class="btn btn-danger" onclick="closeEventModal()">Abbrechen</button>
                     <button type="submit" class="btn btn-success">Speichern</button>
@@ -1008,7 +985,7 @@ HTML_TEMPLATE = """
             </form>
         </div>
     </div>
-    
+
     <!-- Gallery Modal -->
     <div id="gallery-modal" class="modal">
         <div class="modal-content">
@@ -1016,40 +993,40 @@ HTML_TEMPLATE = """
             <form id="gallery-form" onsubmit="saveGallery(event)">
                 <input type="hidden" id="gallery-id">
                 <input type="hidden" id="gallery-index">
-                
+
                 <div class="form-group">
                     <label>Titel (Deutsch)</label>
                     <input type="text" id="gallery-title-de" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Titel (English)</label>
                     <input type="text" id="gallery-title-en" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Kategorie</label>
                     <input type="text" id="gallery-category">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Datum (YYYY-MM-DD)</label>
                     <input type="date" id="gallery-date">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Event zuordnen</label>
                     <select id="gallery-event-id">
                         <option value="">Kein Event</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Bild</label>
                     <input type="file" id="gallery-image" accept="image/*">
                     <small id="gallery-current-image"></small>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" class="btn btn-danger" onclick="closeGalleryModal()">Abbrechen</button>
                     <button type="submit" class="btn btn-success">Speichern</button>
@@ -1057,7 +1034,7 @@ HTML_TEMPLATE = """
             </form>
         </div>
     </div>
-    
+
     <!-- Blocked/Private Veranstaltungen Modal -->
     <div id="blocked-modal" class="modal">
         <div class="modal-content">
@@ -1065,27 +1042,27 @@ HTML_TEMPLATE = """
             <form id="blocked-form" onsubmit="saveBlocked(event)">
                 <input type="hidden" id="blocked-id">
                 <input type="hidden" id="blocked-index">
-                
+
                 <div class="form-group">
                     <label>Datum (YYYY-MM-DD)</label>
                     <input type="date" id="blocked-date" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Start-Zeit (HH:MM)</label>
                     <input type="time" id="blocked-start-time" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>End-Zeit (HH:MM)</label>
                     <input type="time" id="blocked-end-time" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Grund / Beschreibung</label>
                     <input type="text" id="blocked-reason">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Status (optional)</label>
                     <select id="blocked-status">
@@ -1094,7 +1071,7 @@ HTML_TEMPLATE = """
                         <option value="confirmed">Confirmed</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Räume (optional, mehrere mit Strg/Cmd auswählen)</label>
                     <select id="blocked-rooms" multiple style="height: 100px;">
@@ -1105,7 +1082,7 @@ HTML_TEMPLATE = """
                     </select>
                     <small style="color: #666;">Keine Auswahl = alle Räume blockiert</small>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" class="btn btn-danger" onclick="closeBlockedModal()">Abbrechen</button>
                     <button type="submit" class="btn btn-success">Speichern</button>
@@ -1113,7 +1090,19 @@ HTML_TEMPLATE = """
             </form>
         </div>
     </div>
-    
+
+    <!-- Confirm Modal (für Drag & Drop etc.) -->
+    <div class="modal" id="confirm-modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 id="confirm-title" style="margin-bottom: 20px; color: var(--orange);">Bestätigung</h2>
+            <p id="confirm-message" style="margin-bottom: 30px; line-height: 1.6;"></p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeConfirmModal(false)">Abbrechen</button>
+                <button class="btn btn-primary" onclick="closeConfirmModal(true)">Bestätigen</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let eventsData = [];
         let galleryData = [];
@@ -1124,28 +1113,48 @@ HTML_TEMPLATE = """
         let selectedGalleryIndices = [];
         let currentCalendarDate = new Date();
         let calendarFilterFuture = true;
-        
+
+        // Confirm Modal
+        let confirmResolve = null;
+
+        function showConfirm(title, message) {
+            return new Promise((resolve) => {
+                confirmResolve = resolve;
+                document.getElementById('confirm-title').textContent = title;
+                document.getElementById('confirm-message').textContent = message;
+                document.getElementById('confirm-modal').style.display = 'flex';
+            });
+        }
+
+        function closeConfirmModal(confirmed) {
+            document.getElementById('confirm-modal').style.display = 'none';
+            if (confirmResolve) {
+                confirmResolve(confirmed);
+                confirmResolve = null;
+            }
+        }
+
         // Undo/Redo
         let undoStack = [];
         let redoStack = [];
         const MAX_UNDO = 20;
-        
+
         // Suche & Filter
         let searchTerm = '';
         let currentCategory = 'all';
         let currentSort = 'date';  // 'date', 'title', 'category'
-        
+
         // Letzte Änderungen
         let recentChanges = [];
-        
+
         // Tab Switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
+
             event.target.classList.add('active');
             document.getElementById(tabName + '-tab').classList.add('active');
-            
+
             // Dashboard laden beim Öffnen
             if (tabName === 'dashboard') {
                 loadDashboardStats();
@@ -1155,7 +1164,7 @@ HTML_TEMPLATE = """
                 renderEditorCalendar();
             }
         }
-        
+
         // Alerts
         function showAlert(message, type = 'success') {
             const alert = document.getElementById('alert');
@@ -1163,7 +1172,7 @@ HTML_TEMPLATE = """
             alert.textContent = message;
             setTimeout(() => alert.textContent = '', 5000);
         }
-        
+
         // Projektpfad setzen
         async function setProjectPath() {
             const path = document.getElementById('projectPath').value;
@@ -1171,13 +1180,13 @@ HTML_TEMPLATE = """
                 showAlert('Bitte einen Pfad eingeben', 'error');
                 return;
             }
-            
+
             const response = await fetch('/set_project_path', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({path})
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert('Projektpfad gesetzt und Daten geladen');
@@ -1186,12 +1195,12 @@ HTML_TEMPLATE = """
                 showAlert(result.error || 'Fehler beim Setzen des Pfads', 'error');
             }
         }
-        
+
         // Daten laden
         async function loadData() {
             const response = await fetch('/get_data');
             const data = await response.json();
-            
+
             if (data.success) {
                 eventsData = data.events;
                 galleryData = data.gallery;
@@ -1199,54 +1208,54 @@ HTML_TEMPLATE = """
                 renderBlockedList();
                 renderGalleryList();
                 populateEventDropdown();
-                
+
                 // Dashboard aktualisieren wenn aktiv
                 if (document.getElementById('dashboard-tab').classList.contains('active')) {
                     loadDashboardStats();
                 }
-                
+
                 // Kalender aktualisieren wenn aktiv
                 if (document.getElementById('calendar-tab').classList.contains('active')) {
                     renderEditorCalendar();
                 }
             }
         }
-        
+
         // Events Liste rendern
         function renderEventsList() {
             applyEventsFilters();  // Nutzt jetzt Filter-System
         }
-        
+
         function selectEvent(index) {
             selectedEventIndex = index;
             applyEventsFilters();
         }
-        
+
         // Blocked/Private Veranstaltungen Liste rendern
         function renderBlockedList() {
             applyBlockedFilters();  // Nutzt jetzt Filter-System
         }
-        
+
         function selectBlocked(index) {
             selectedBlockedIndex = index;
             applyBlockedFilters();
         }
-        
+
         // Gallery Liste rendern
         function renderGalleryList() {
             applyGalleryFilters();  // Nutzt jetzt Filter-System
         }
-        
+
         function selectGallery(index) {
             selectedGalleryIndex = index;
             applyGalleryFilters();
         }
-        
+
         // Event Dropdown für Gallery
         function populateEventDropdown() {
             const select = document.getElementById('gallery-event-id');
             select.innerHTML = '<option value="">Kein Event</option>';
-            
+
             eventsData.forEach(event => {
                 if (event.type === 'event') {
                     const option = document.createElement('option');
@@ -1256,13 +1265,13 @@ HTML_TEMPLATE = """
                 }
             });
         }
-        
+
         // Event Modal
         function openEventModal(index = null) {
             const modal = document.getElementById('event-modal');
             const form = document.getElementById('event-form');
             form.reset();
-            
+
             if (index !== null) {
                 const event = eventsData[index];
                 document.getElementById('event-modal-title').textContent = 'Event bearbeiten';
@@ -1282,14 +1291,14 @@ HTML_TEMPLATE = """
                 document.getElementById('event-modal-title').textContent = 'Neues Event';
                 document.getElementById('event-index').value = '';
             }
-            
+
             modal.classList.add('active');
         }
-        
+
         function closeEventModal() {
             document.getElementById('event-modal').classList.remove('active');
         }
-        
+
         function editSelectedEvent() {
             if (selectedEventIndex === null) {
                 showAlert('Bitte ein Event auswählen', 'error');
@@ -1297,13 +1306,13 @@ HTML_TEMPLATE = """
             }
             openEventModal(selectedEventIndex);
         }
-        
+
         async function saveEvent(e) {
             e.preventDefault();
-            
+
             const formData = new FormData();
             const index = document.getElementById('event-index').value;
-            
+
             formData.append('index', index);
             formData.append('id', document.getElementById('event-id').value);
             formData.append('title_de', document.getElementById('event-title-de').value);
@@ -1315,17 +1324,17 @@ HTML_TEMPLATE = """
             formData.append('time', document.getElementById('event-time').value);
             formData.append('price', document.getElementById('event-price').value);
             formData.append('ticketUrl', document.getElementById('event-ticket-url').value);
-            
+
             const imageFile = document.getElementById('event-image').files[0];
             if (imageFile) {
                 formData.append('image', imageFile);
             }
-            
+
             const response = await fetch('/save_event', {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert('Event gespeichert!');
@@ -1335,37 +1344,45 @@ HTML_TEMPLATE = """
                 showAlert(result.error || 'Fehler beim Speichern', 'error');
             }
         }
-        
+
+        function editSelectedEvent() {
+            if (selectedEventIndex === null) {
+                showAlert('Bitte ein Event auswählen', 'error');
+                return;
+            }
+            openEventModal(selectedEventIndex);
+        }
+
         async function deleteSelectedEvent() {
             if (selectedEventIndex === null) {
                 showAlert('Bitte ein Event auswählen', 'error');
                 return;
             }
-            
-            if (!confirm('Event wirklich löschen?')) return;
-            
-            const response = await fetch('/delete_event', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({index: selectedEventIndex})
+
+            showConfirmation('Event wirklich löschen?', async () => {
+                const response = await fetch('/delete_event', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({index: selectedEventIndex})
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showAlert('Event gelöscht!');
+                    selectedEventIndex = null;
+                    await loadData();
+                } else {
+                    showAlert(result.error || 'Fehler beim Löschen', 'error');
+                }
             });
-            
-            const result = await response.json();
-            if (result.success) {
-                showAlert('Event gelöscht!');
-                selectedEventIndex = null;
-                await loadData();
-            } else {
-                showAlert(result.error || 'Fehler beim Löschen', 'error');
-            }
         }
-        
+
         // Blocked/Private Veranstaltungen Modal
         function openBlockedModal(index = null) {
             const modal = document.getElementById('blocked-modal');
             const form = document.getElementById('blocked-form');
             form.reset();
-            
+
             if (index !== null) {
                 const blocked = eventsData[index];
                 document.getElementById('blocked-modal-title').textContent = 'Private Veranstaltung bearbeiten';
@@ -1376,7 +1393,7 @@ HTML_TEMPLATE = """
                 document.getElementById('blocked-end-time').value = blocked.endTime;
                 document.getElementById('blocked-reason').value = blocked.reason || '';
                 document.getElementById('blocked-status').value = blocked.status || '';
-                
+
                 // Räume auswählen falls vorhanden
                 if (blocked.room && Array.isArray(blocked.room)) {
                     const roomSelect = document.getElementById('blocked-rooms');
@@ -1391,14 +1408,14 @@ HTML_TEMPLATE = """
                 document.getElementById('blocked-start-time').value = '00:00';
                 document.getElementById('blocked-end-time').value = '23:59';
             }
-            
+
             modal.classList.add('active');
         }
-        
+
         function closeBlockedModal() {
             document.getElementById('blocked-modal').classList.remove('active');
         }
-        
+
         function editSelectedBlocked() {
             if (selectedBlockedIndex === null) {
                 showAlert('Bitte eine Veranstaltung auswählen', 'error');
@@ -1406,13 +1423,13 @@ HTML_TEMPLATE = """
             }
             openBlockedModal(selectedBlockedIndex);
         }
-        
+
         async function saveBlocked(e) {
             e.preventDefault();
-            
+
             const formData = new FormData();
             const index = document.getElementById('blocked-index').value;
-            
+
             formData.append('index', index);
             formData.append('id', document.getElementById('blocked-id').value);
             formData.append('date', document.getElementById('blocked-date').value);
@@ -1420,17 +1437,17 @@ HTML_TEMPLATE = """
             formData.append('endTime', document.getElementById('blocked-end-time').value);
             formData.append('reason', document.getElementById('blocked-reason').value);
             formData.append('status', document.getElementById('blocked-status').value);
-            
+
             // Räume sammeln
             const roomSelect = document.getElementById('blocked-rooms');
             const selectedRooms = Array.from(roomSelect.selectedOptions).map(opt => opt.value);
             formData.append('rooms', JSON.stringify(selectedRooms));
-            
+
             const response = await fetch('/save_blocked', {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert('Private Veranstaltung gespeichert!');
@@ -1440,37 +1457,37 @@ HTML_TEMPLATE = """
                 showAlert(result.error || 'Fehler beim Speichern', 'error');
             }
         }
-        
+
         async function deleteSelectedBlocked() {
             if (selectedBlockedIndex === null) {
                 showAlert('Bitte eine Veranstaltung auswählen', 'error');
                 return;
             }
-            
-            if (!confirm('Private Veranstaltung wirklich löschen?')) return;
-            
-            const response = await fetch('/delete_blocked', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({index: selectedBlockedIndex})
+
+            showConfirmation('Private Veranstaltung wirklich löschen?', async () => {
+                const response = await fetch('/delete_blocked', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({index: selectedBlockedIndex})
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showAlert('Private Veranstaltung gelöscht!');
+                    selectedBlockedIndex = null;
+                    await loadData();
+                } else {
+                    showAlert(result.error || 'Fehler beim Löschen', 'error');
+                }
             });
-            
-            const result = await response.json();
-            if (result.success) {
-                showAlert('Private Veranstaltung gelöscht!');
-                selectedBlockedIndex = null;
-                await loadData();
-            } else {
-                showAlert(result.error || 'Fehler beim Löschen', 'error');
-            }
         }
-        
+
         // Gallery Modal
         function openGalleryModal(index = null) {
             const modal = document.getElementById('gallery-modal');
             const form = document.getElementById('gallery-form');
             form.reset();
-            
+
             if (index !== null) {
                 const item = galleryData[index];
                 document.getElementById('gallery-modal-title').textContent = 'Gallery bearbeiten';
@@ -1486,14 +1503,14 @@ HTML_TEMPLATE = """
                 document.getElementById('gallery-modal-title').textContent = 'Neue Gallery';
                 document.getElementById('gallery-index').value = '';
             }
-            
+
             modal.classList.add('active');
         }
-        
+
         function closeGalleryModal() {
             document.getElementById('gallery-modal').classList.remove('active');
         }
-        
+
         function editSelectedGallery() {
             if (selectedGalleryIndex === null) {
                 showAlert('Bitte einen Eintrag auswählen', 'error');
@@ -1501,13 +1518,13 @@ HTML_TEMPLATE = """
             }
             openGalleryModal(selectedGalleryIndex);
         }
-        
+
         async function saveGallery(e) {
             e.preventDefault();
-            
+
             const formData = new FormData();
             const index = document.getElementById('gallery-index').value;
-            
+
             formData.append('index', index);
             formData.append('id', document.getElementById('gallery-id').value);
             formData.append('title_de', document.getElementById('gallery-title-de').value);
@@ -1515,17 +1532,17 @@ HTML_TEMPLATE = """
             formData.append('category', document.getElementById('gallery-category').value);
             formData.append('date', document.getElementById('gallery-date').value);
             formData.append('eventId', document.getElementById('gallery-event-id').value);
-            
+
             const imageFile = document.getElementById('gallery-image').files[0];
             if (imageFile) {
                 formData.append('image', imageFile);
             }
-            
+
             const response = await fetch('/save_gallery', {
                 method: 'POST',
                 body: formData
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert('Gallery-Eintrag gespeichert!');
@@ -1535,47 +1552,47 @@ HTML_TEMPLATE = """
                 showAlert(result.error || 'Fehler beim Speichern', 'error');
             }
         }
-        
+
         async function deleteSelectedGallery() {
             if (selectedGalleryIndex === null) {
                 showAlert('Bitte einen Eintrag auswählen', 'error');
                 return;
             }
-            
-            if (!confirm('Gallery-Eintrag wirklich löschen?')) return;
-            
-            const response = await fetch('/delete_gallery', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({index: selectedGalleryIndex})
+
+            showConfirmation('Gallery-Eintrag wirklich löschen?', async () => {
+                const response = await fetch('/delete_gallery', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({index: selectedGalleryIndex})
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showAlert('Gallery-Eintrag gelöscht!');
+                    selectedGalleryIndex = null;
+                    await loadData();
+                } else {
+                    showAlert(result.error || 'Fehler beim Löschen', 'error');
+                }
             });
-            
-            const result = await response.json();
-            if (result.success) {
-                showAlert('Gallery-Eintrag gelöscht!');
-                selectedGalleryIndex = null;
-                await loadData();
-            } else {
-                showAlert(result.error || 'Fehler beim Löschen', 'error');
-            }
         }
-        
+
         // ========================================
         // NEUE FUNKTIONEN: Dashboard, Kalender, Mehrfachauswahl
         // ========================================
-        
+
         // Dashboard Statistiken laden
         async function loadDashboardStats() {
             const response = await fetch('/get_dashboard_stats');
             const data = await response.json();
-            
+
             if (data.success) {
                 const stats = data.stats;
                 document.getElementById('stats-total-events').textContent = stats.total_events;
                 document.getElementById('stats-upcoming').textContent = stats.upcoming_events;
                 document.getElementById('stats-gallery').textContent = stats.gallery_items;
                 document.getElementById('stats-blocked').textContent = stats.blocked_dates;
-                
+
                 // Kategorien
                 let catHtml = '';
                 const catColors = {
@@ -1594,7 +1611,7 @@ HTML_TEMPLATE = """
                     `;
                 }
                 document.getElementById('category-stats').innerHTML = catHtml || '<p style="color: rgba(255,255,255,0.5);">Keine Events vorhanden</p>';
-                
+
                 // Nächste Events
                 let nextHtml = '';
                 stats.next_events.forEach(event => {
@@ -1608,30 +1625,30 @@ HTML_TEMPLATE = """
                 document.getElementById('next-events-list').innerHTML = nextHtml || '<p style="color: rgba(255,255,255,0.5);">Keine kommenden Events</p>';
             }
         }
-        
+
         // Backup herunterladen
         function downloadBackup() {
             window.location.href = '/create_backup';
             showAlert('Backup wird erstellt und heruntergeladen...');
         }
-        
+
         // Kalender rendern (Editor)
         function renderEditorCalendar() {
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
             const today = new Date();
-            
+
             const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
             document.getElementById('calendarEditorTitle').textContent = `${monthNames[month]} ${year}`;
-            
+
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const startDay = firstDay === 0 ? 6 : firstDay - 1;
-            
-            let html = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].map(d => 
+
+            let html = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].map(d =>
                 `<div style="background: rgba(252,171,20,0.2); padding: 12px; text-align: center; font-weight: 500;">${d}</div>`
             ).join('');
-            
+
             // Vorheriger Monat
             const prevMonthDays = new Date(year, month, 0).getDate();
             for (let i = startDay; i > 0; i--) {
@@ -1639,37 +1656,37 @@ HTML_TEMPLATE = """
                     <div>${prevMonthDays - i + 1}</div>
                 </div>`;
             }
-            
+
             // Aktueller Monat
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const cellDate = new Date(year, month, day);
                 const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
-                
+
                 // Filter: Nur zukünftige Events
                 const filterFuture = document.getElementById('filter-future')?.checked || false;
-                
+
                 let dayEvents = eventsData.filter(e => e.type === 'event' && e.date === dateStr);
                 const dayBlocked = eventsData.filter(e => e.type === 'blocked' && e.date === dateStr);
-                
+
                 // Zeitfilter anwenden
                 if (filterFuture && cellDate < today) {
                     dayEvents = [];
                 }
-                
+
                 let classes = 'background: var(--black); min-height: 100px; padding: 8px; border: 1px solid var(--border); cursor: pointer;';
                 if (isToday) classes += ' border: 2px solid var(--green);';
-                
-                html += `<div style="${classes}" 
-                              ondrop="dropEvent(event, '${dateStr}')" 
+
+                html += `<div style="${classes}"
+                              ondrop="dropEvent(event, '${dateStr}')"
                               ondragover="allowDrop(event)"
                               data-date="${dateStr}">
                     <div style="font-size: 0.9rem; margin-bottom: 5px;">${day}</div>
                     ${dayEvents.map(e => `
-                        <div style="background: var(--blue); padding: 4px; font-size: 0.7rem; margin-bottom: 3px; border-radius: 3px; cursor: move;" 
+                        <div style="background: var(--blue); padding: 4px; font-size: 0.7rem; margin-bottom: 3px; border-radius: 3px; cursor: move;"
                              draggable="true"
                              ondragstart="dragEvent(event, ${e.id})"
-                             onclick="jumpToEvent(${e.id}, 'events')" 
+                             onclick="jumpToEvent(${e.id}, 'events')"
                              title="${e.title.de}">
                             ${e.title.de}
                         </div>
@@ -1681,7 +1698,7 @@ HTML_TEMPLATE = """
                     `).join('')}
                 </div>`;
             }
-            
+
             // Nächster Monat
             const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
             const nextMonthDays = totalCells - (startDay + daysInMonth);
@@ -1690,42 +1707,52 @@ HTML_TEMPLATE = """
                     <div>${i}</div>
                 </div>`;
             }
-            
+
             document.getElementById('calendarEditorGrid').innerHTML = html;
         }
-        
+
         // Drag & Drop im Kalender
         let draggedEventId = null;
-        
+
         function dragEvent(event, eventId) {
             draggedEventId = eventId;
             event.dataTransfer.effectAllowed = 'move';
         }
-        
+
         function allowDrop(event) {
             event.preventDefault();
             event.dataTransfer.dropEffect = 'move';
         }
-        
+
         async function dropEvent(event, newDate) {
             event.preventDefault();
             if (!draggedEventId) return;
-            
+
             // Finde Event und aktualisiere Datum
             const eventIndex = eventsData.findIndex(e => e.id === draggedEventId);
             if (eventIndex === -1) return;
-            
+
             const oldDate = eventsData[eventIndex].date;
-            if (oldDate === newDate) return;
-            
-            if (!confirm(`Event "${eventsData[eventIndex].title.de}" von ${oldDate} nach ${newDate} verschieben?`)) {
+            if (oldDate === newDate) {
                 draggedEventId = null;
                 return;
             }
-            
+
+            // Schöner Confirm-Dialog
+            const eventTitle = eventsData[eventIndex].title.de;
+            const confirmed = await showConfirm(
+                'Event verschieben?',
+                `Möchten Sie "${eventTitle}" von ${oldDate} nach ${newDate} verschieben?`
+            );
+
+            if (!confirmed) {
+                draggedEventId = null;
+                return;
+            }
+
             // Datum aktualisieren
             eventsData[eventIndex].date = newDate;
-            
+
             // Speichern
             const response = await fetch('/save_event', {
                 method: 'POST',
@@ -1743,7 +1770,7 @@ HTML_TEMPLATE = """
                     ticketUrl: eventsData[eventIndex].ticketUrl
                 })
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert(`Event nach ${newDate} verschoben!`);
@@ -1751,24 +1778,24 @@ HTML_TEMPLATE = """
             } else {
                 showAlert('Fehler beim Verschieben', 'error');
             }
-            
+
             draggedEventId = null;
         }
-        
+
         function changeCalendarMonth(delta) {
             currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
             renderEditorCalendar();
         }
-        
+
         function goToToday() {
             currentCalendarDate = new Date();
             renderEditorCalendar();
         }
-        
+
         function filterCalendarEvents() {
             renderEditorCalendar();
         }
-        
+
         function jumpToEvent(eventId, tabName) {
             switchTab(tabName);
             setTimeout(() => {
@@ -1780,15 +1807,20 @@ HTML_TEMPLATE = """
                 }
             }, 100);
         }
-        
+
         // Mehrfachauswahl
         function toggleSelectAll(type) {
             const checkbox = document.getElementById(`select-all-${type}`);
             const checkboxes = document.querySelectorAll(`#${type}-list input[type="checkbox"]`);
-            checkboxes.forEach(cb => cb.checked = checkbox.checked);
-            updateSelectedIndices(type);
+
+            // Alle Checkboxen setzen UND Change-Event triggern
+            checkboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+                // Trigger change event to update arrays
+                cb.dispatchEvent(new Event('change'));
+            });
         }
-        
+
         function updateSelectedIndices(type) {
             if (type === 'events') {
                 selectedEventsIndices = [];
@@ -1803,22 +1835,37 @@ HTML_TEMPLATE = """
             }
         }
         
+        document.addEventListener('change', function (e) {
+    if (e.target.matches('#events-list input[type="checkbox"]')) {
+        updateSelectedIndices('events');
+    }
+    if (e.target.matches('#gallery-list input[type="checkbox"]')) {
+        updateSelectedIndices('gallery');
+    }
+});
+
+
         async function deleteSelected(type) {
             const indices = type === 'events' ? selectedEventsIndices : selectedGalleryIndices;
-            
+
             if (indices.length === 0) {
                 showAlert('Bitte mindestens einen Eintrag auswählen', 'error');
                 return;
             }
-            
-            if (!confirm(`${indices.length} Einträge wirklich löschen?`)) return;
-            
+
+            const confirmed = await showConfirm(
+                'Einträge löschen?',
+                `Möchten Sie wirklich ${indices.length} ${indices.length === 1 ? 'Eintrag' : 'Einträge'} löschen? Diese Aktion kann nicht rückgängig gemacht werden.`
+            );
+
+            if (!confirmed) return;
+
             const response = await fetch('/delete_multiple', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({indices, type})
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert(`${result.deleted} Einträge gelöscht!`);
@@ -1829,21 +1876,24 @@ HTML_TEMPLATE = """
                 showAlert(result.error || 'Fehler beim Löschen', 'error');
             }
         }
-        
+
         async function duplicateSelected(type) {
             if (type !== 'events') return;
-            
-            if (selectedEventIndex === null) {
-                showAlert('Bitte ein Event auswählen', 'error');
+
+            // Nutze erstes ausgewähltes Event
+            if (selectedEventsIndices.length === 0) {
+                showAlert('Bitte mindestens ein Event auswählen', 'error');
                 return;
             }
-            
+
+            const indexToDuplicate = selectedEventsIndices[0];
+
             const response = await fetch('/duplicate_event', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({index: selectedEventIndex})
+                body: JSON.stringify({index: indexToDuplicate})
             });
-            
+
             const result = await response.json();
             if (result.success) {
                 showAlert('Event dupliziert!');
@@ -1852,11 +1902,11 @@ HTML_TEMPLATE = """
                 showAlert(result.error || 'Fehler beim Duplizieren', 'error');
             }
         }
-        
+
         // ========================================
         // UNDO/REDO SYSTEM
         // ========================================
-        
+
         function saveState(action) {
             const state = {
                 events: JSON.parse(JSON.stringify(eventsData)),
@@ -1864,68 +1914,68 @@ HTML_TEMPLATE = """
                 timestamp: new Date().toISOString(),
                 action: action
             };
-            
+
             undoStack.push(state);
             if (undoStack.length > MAX_UNDO) {
                 undoStack.shift();
             }
             redoStack = [];  // Clear redo stack on new action
-            
+
             // Letzte Änderungen tracken
             addRecentChange(action);
         }
-        
+
         async function undo() {
             if (undoStack.length === 0) {
                 showAlert('Nichts zum Rückgängigmachen', 'error');
                 return;
             }
-            
+
             const currentState = {
                 events: JSON.parse(JSON.stringify(eventsData)),
                 gallery: JSON.parse(JSON.stringify(galleryData))
             };
             redoStack.push(currentState);
-            
+
             const previousState = undoStack.pop();
             eventsData = previousState.events;
             galleryData = previousState.gallery;
-            
+
             // Save to server
             await saveAllData();
             renderEventsList();
             renderBlockedList();
             renderGalleryList();
-            
+
             showAlert('Rückgängig: ' + previousState.action);
         }
-        
+
         async function redo() {
             if (redoStack.length === 0) {
                 showAlert('Nichts zum Wiederholen', 'error');
                 return;
             }
-            
+
             const currentState = {
                 events: JSON.parse(JSON.stringify(eventsData)),
                 gallery: JSON.parse(JSON.stringify(galleryData)),
                 action: 'Redo'
             };
             undoStack.push(currentState);
-            
+
             const nextState = redoStack.pop();
             eventsData = nextState.events;
             galleryData = nextState.gallery;
-            
+
             // Save to server
             await saveAllData();
             renderEventsList();
             renderBlockedList();
             renderGalleryList();
-            
+
             showAlert('Wiederhergestellt');
         }
-        
+
         async function saveAllData() {
             // Events speichern
             const eventsPath = document.getElementById('projectPath').value + '/events.json';
@@ -1934,7 +1984,7 @@ HTML_TEMPLATE = """
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({events: eventsData})
             });
-            
+
             // Gallery speichern
             await fetch('/save_gallery', {
                 method: 'POST',
@@ -1942,7 +1992,7 @@ HTML_TEMPLATE = """
                 body: JSON.stringify({gallery: galleryData})
             });
         }
-        
+
         // Letzte Änderungen
         function addRecentChange(action) {
             const change = {
@@ -1950,24 +2000,24 @@ HTML_TEMPLATE = """
                 timestamp: new Date().toLocaleString('de-DE'),
                 time: Date.now()
             };
-            
+
             recentChanges.unshift(change);
             if (recentChanges.length > 10) {
                 recentChanges = recentChanges.slice(0, 10);
             }
-            
+
             updateRecentChangesDisplay();
         }
-        
+
         function updateRecentChangesDisplay() {
             const container = document.getElementById('recent-changes-list');
             if (!container) return;
-            
+
             if (recentChanges.length === 0) {
                 container.innerHTML = '<p style="color: rgba(255,255,255,0.4);">Keine Änderungen</p>';
                 return;
             }
-            
+
             container.innerHTML = recentChanges.map(change => `
                 <div style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <span style="color: var(--orange);">${change.action}</span>
@@ -1975,7 +2025,7 @@ HTML_TEMPLATE = """
                 </div>
             `).join('');
         }
-        
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
@@ -1988,147 +2038,77 @@ HTML_TEMPLATE = """
                 }
             }
         });
-        
+
         // ========================================
         // SUCHE, FILTER & SORTIERUNG
         // ========================================
-        
+
         function applyEventsFilters() {
             const search = document.getElementById('search-events').value.toLowerCase();
-            const category = document.getElementById('filter-category').value;
-            const sort = document.getElementById('sort-events').value;
-            
-            // Filter
-            let filtered = eventsData.filter(e => {
-                if (e.type !== 'event') return false;
-                
-                const matchesSearch = search === '' || 
-                    e.title.de.toLowerCase().includes(search) ||
-                    e.title.en.toLowerCase().includes(search) ||
-                    e.description.de.toLowerCase().includes(search) ||
-                    e.description.en.toLowerCase().includes(search);
-                
-                const matchesCategory = category === 'all' || e.category === category;
-                
-                return matchesSearch && matchesCategory;
+
+            const filtered = eventsData.filter(item => {
+                if (item.type !== 'event') return false;
+
+                return search === '' ||
+                    item.title.de.toLowerCase().includes(search) ||
+                    item.title.en.toLowerCase().includes(search) ||
+                    item.description.de.toLowerCase().includes(search) ||
+                    item.description.en.toLowerCase().includes(search) ||
+                    item.date.includes(search);
             });
-            
-            // Sortierung
-            filtered.sort((a, b) => {
-                if (sort === 'date') {
-                    return new Date(a.date) - new Date(b.date);
-                } else if (sort === 'title') {
-                    return a.title.de.localeCompare(b.title.de);
-                } else if (sort === 'category') {
-                    return a.category.localeCompare(b.category);
-                }
-                return 0;
-            });
-            
-            // Render
+
             const list = document.getElementById('events-list');
             list.innerHTML = '';
-            
-            filtered.forEach((event) => {
-                const index = eventsData.indexOf(event);
+
+            filtered.forEach((item) => {
+                const index = eventsData.indexOf(item);
                 const li = document.createElement('li');
-                li.style.display = 'flex';
-                li.style.alignItems = 'center';
-                li.style.gap = '12px';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.dataset.index = index;
-                checkbox.checked = selectedEventsIndices.includes(index);
-                checkbox.onclick = (e) => {
-                    e.stopPropagation();
-                    updateSelectedIndices('events');
-                };
-                li.appendChild(checkbox);
-                
-                const text = document.createElement('span');
-                text.textContent = `${event.id}: ${event.title.de} (${event.date})`;
-                text.style.flex = '1';
-                text.onclick = () => selectEvent(index);
-                li.appendChild(text);
-                
+                li.textContent = `${item.id}: ${item.title.de} (${item.date})`;
+                li.onclick = () => selectEvent(index);
                 if (index === selectedEventIndex) li.classList.add('selected');
                 list.appendChild(li);
             });
         }
-        
+
         function applyGalleryFilters() {
             const search = document.getElementById('search-gallery').value.toLowerCase();
-            const category = document.getElementById('filter-gallery-category').value;
-            const sort = document.getElementById('sort-gallery').value;
-            
-            let filtered = galleryData.filter(item => {
-                const matchesSearch = search === '' ||
+
+            const filtered = galleryData.filter(item => {
+                return search === '' ||
                     item.title.de.toLowerCase().includes(search) ||
-                    item.title.en.toLowerCase().includes(search);
-                
-                const matchesCategory = category === 'all' || item.category === category;
-                
-                return matchesSearch && matchesCategory;
+                    item.title.en.toLowerCase().includes(search) ||
+                    item.date.includes(search) ||
+                    item.category.toLowerCase().includes(search);
             });
-            
-            filtered.sort((a, b) => {
-                if (sort === 'date') {
-                    return new Date(a.date) - new Date(b.date);
-                } else if (sort === 'title') {
-                    return a.title.de.localeCompare(b.title.de);
-                } else if (sort === 'category') {
-                    return a.category.localeCompare(b.category);
-                }
-                return 0;
-            });
-            
+
             const list = document.getElementById('gallery-list');
             list.innerHTML = '';
-            
+
             filtered.forEach((item) => {
                 const index = galleryData.indexOf(item);
                 const li = document.createElement('li');
-                li.style.display = 'flex';
-                li.style.alignItems = 'center';
-                li.style.gap = '12px';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.dataset.index = index;
-                checkbox.checked = selectedGalleryIndices.includes(index);
-                checkbox.onclick = (e) => {
-                    e.stopPropagation();
-                    updateSelectedIndices('gallery');
-                };
-                li.appendChild(checkbox);
-                
-                const text = document.createElement('span');
-                text.textContent = `${item.id}: ${item.title.de}`;
-                text.style.flex = '1';
-                text.onclick = () => selectGallery(index);
-                li.appendChild(text);
-                
+                li.textContent = `${item.id}: ${item.title.de} (${item.date}) - ${item.category}`;
+                li.onclick = () => selectGallery(index);
                 if (index === selectedGalleryIndex) li.classList.add('selected');
                 list.appendChild(li);
             });
         }
-        
+
         function applyBlockedFilters() {
             const search = document.getElementById('search-blocked').value.toLowerCase();
-            
+
             const filtered = eventsData.filter(item => {
                 if (item.type !== 'blocked') return false;
-                
+
                 const reason = item.reason || 'Private Veranstaltung';
-                return search === '' || 
+                return search === '' ||
                     item.date.includes(search) ||
                     reason.toLowerCase().includes(search);
             });
-            
+
             const list = document.getElementById('blocked-list');
             list.innerHTML = '';
-            
+
             filtered.forEach((item) => {
                 const index = eventsData.indexOf(item);
                 const li = document.createElement('li');
@@ -2139,12 +2119,51 @@ HTML_TEMPLATE = """
                 list.appendChild(li);
             });
         }
-        
+
+
+        // Custom Confirmation Dialog
+        let confirmCallback = null;
+
+        function showConfirmation(message, onConfirm) {
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmModal').classList.add('active');
+            confirmCallback = onConfirm;
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            confirmCallback = null;
+        }
+
+        function handleConfirmKeyPress(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executeConfirm();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeConfirmModal();
+            }
+        }
+
+        function executeConfirm() {
+            if (confirmCallback) {
+                confirmCallback();
+            }
+            closeConfirmModal();
+        }
+
+        // Event Listener für Bestätigen-Button - wird nach dem DOM-Load gesetzt
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('confirmButton').addEventListener('click', executeConfirm);
+            document.addEventListener('keydown', handleConfirmKeyPress);
+        });
+
+
         // Initial load
         loadData();
         loadDashboardStats();  // Dashboard beim Start laden
     </script>
-    
+
     <!-- Vorschau Modal -->
     <div class="preview-modal" id="previewModal">
         <div class="preview-container">
@@ -2159,28 +2178,28 @@ HTML_TEMPLATE = """
             <iframe id="previewIframe" class="preview-iframe"></iframe>
         </div>
     </div>
-    
+
     <script>
         function openPreview() {
             document.getElementById('previewModal').classList.add('active');
             document.body.style.overflow = 'hidden';
             switchPreview('events');
         }
-        
+
         function closePreview() {
             document.getElementById('previewModal').classList.remove('active');
             document.body.style.overflow = '';
             document.getElementById('previewIframe').src = 'about:blank';
         }
-        
+
         function switchPreview(type) {
             document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             const iframe = document.getElementById('previewIframe');
             iframe.src = `/preview/${type}`;
         }
-        
+
         // ESC zum Schließen
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.getElementById('previewModal').classList.contains('active')) {
@@ -2188,9 +2207,22 @@ HTML_TEMPLATE = """
             }
         });
     </script>
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 id="confirmTitle">Bestätigung</h2>
+            <p id="confirmMessage" style="margin: 20px 0; font-size: 1.1rem;"></p>
+            <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">Abbrechen</button>
+                <button class="btn btn-danger" id="confirmButton">Löschen</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
 """
+
 
 # --------------------------------------
 # Flask Routes
@@ -2198,6 +2230,7 @@ HTML_TEMPLATE = """
 @app.route('/')
 def index():
     return render_template_string(HTML_TEMPLATE, project_path=PROJECT_PATH)
+
 
 @app.route('/set_project_path', methods=['POST'])
 def set_project_path():
@@ -2210,6 +2243,7 @@ def set_project_path():
 
     PROJECT_PATH = path
     return jsonify({'success': True})
+
 
 @app.route('/get_data')
 def get_data():
@@ -2227,6 +2261,7 @@ def get_data():
         'events': events,
         'gallery': gallery
     })
+
 
 @app.route('/save_event', methods=['POST'])
 def save_event():
@@ -2283,6 +2318,7 @@ def save_event():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+
 @app.route('/delete_event', methods=['POST'])
 def delete_event():
     if not PROJECT_PATH:
@@ -2301,6 +2337,7 @@ def delete_event():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+
 
 @app.route('/save_blocked', methods=['POST'])
 def save_blocked():
@@ -2370,6 +2407,7 @@ def delete_blocked():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+
 @app.route('/save_gallery', methods=['POST'])
 def save_gallery():
     if not PROJECT_PATH:
@@ -2418,6 +2456,7 @@ def save_gallery():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+
 @app.route('/delete_gallery', methods=['POST'])
 def delete_gallery():
     if not PROJECT_PATH:
@@ -2449,7 +2488,7 @@ def create_backup():
         return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
 
     try:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
         memory_file = io.BytesIO()
 
         with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -2968,21 +3007,23 @@ GALLERY_PREVIEW_TEMPLATE = """
 </html>
 """
 
+
 # --------------------------------------
 # Browser öffnen
 # --------------------------------------
 def open_browser():
     webbrowser.open('http://127.0.0.1:5000')
 
+
 # --------------------------------------
 # Start
 # --------------------------------------
 if __name__ == '__main__':
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("JSON Editor startet...")
     print("Öffne Browser auf: http://127.0.0.1:5000")
     print("Zum Beenden: Strg+C drücken")
-    print("="*50 + "\n")
+    print("=" * 50 + "\n")
 
     Timer(1, open_browser).start()
     app.run(debug=False, port=5000)

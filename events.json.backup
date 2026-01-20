@@ -41,7 +41,13 @@
         "date": "2026-02-15",
         "startTime": "00:00",
         "endTime": "23:59",
-        "reason": "Private Firmenfeier"
+        "reason": "Private Firmenfeier",
+        "room": [
+            "hall",
+            "lab",
+            "outdoor",
+            "barclub"
+        ]
     },
     {
         "id": 4,
@@ -193,7 +199,7 @@
             "en": ""
         },
         "category": "party",
-        "date": "2026-01-09",
+        "date": "2026-01-10",
         "time": "18:00",
         "price": "100€",
         "ticketUrl": "https://ticket.area710.de",
@@ -286,23 +292,5 @@
         "price": "0€",
         "ticketUrl": "https://ticket.area710.de",
         "image": "img/Mercedes-Benz_CLA_AMG_Line_2019_Edition_Orange_Art_559670_1920x1080.jpg"
-    },
-    {
-        "id": 21,
-        "type": "event",
-        "title": {
-            "de": "Test2",
-            "en": "Test2"
-        },
-        "description": {
-            "de": "Test2",
-            "en": "Test2"
-        },
-        "category": "workshop",
-        "date": "2026-12-12",
-        "time": "12:00",
-        "price": "150€",
-        "ticketUrl": "https://ticket.area710.de",
-        "image": "img/abiklasse_2024.jpg"
     }
 ]

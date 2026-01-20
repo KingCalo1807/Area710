@@ -188,24 +188,6 @@
         "reason": "Silvester - Private Veranstaltung"
     },
     {
-        "id": 15,
-        "type": "event",
-        "title": {
-            "de": "Test",
-            "en": "Test"
-        },
-        "description": {
-            "de": "",
-            "en": ""
-        },
-        "category": "party",
-        "date": "2026-01-09",
-        "time": "18:00",
-        "price": "100€",
-        "ticketUrl": "https://ticket.area710.de",
-        "image": "img/lab.jpg"
-    },
-    {
         "id": 16,
         "type": "blocked",
         "status": "reserved",
@@ -292,23 +274,5 @@
         "price": "0€",
         "ticketUrl": "https://ticket.area710.de",
         "image": "img/Mercedes-Benz_CLA_AMG_Line_2019_Edition_Orange_Art_559670_1920x1080.jpg"
-    },
-    {
-        "id": 21,
-        "type": "event",
-        "title": {
-            "de": "Test2",
-            "en": "Test2"
-        },
-        "description": {
-            "de": "Test2",
-            "en": "Test2"
-        },
-        "category": "workshop",
-        "date": "2026-12-12",
-        "time": "12:00",
-        "price": "150€",
-        "ticketUrl": "https://ticket.area710.de",
-        "image": "img/abiklasse_2024.jpg"
     }
 ]
