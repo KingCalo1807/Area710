@@ -1097,8 +1097,8 @@ HTML_TEMPLATE = """
             <h2 id="confirm-title" style="margin-bottom: 20px; color: var(--orange);">Bestätigung</h2>
             <p id="confirm-message" style="margin-bottom: 30px; line-height: 1.6;"></p>
             <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                <button class="btn btn-secondary" onclick="closeConfirmModal(false)">Abbrechen</button>
-                <button class="btn btn-primary" onclick="closeConfirmModal(true)">Bestätigen</button>
+                <button class="btn btn-secondary" id="confirm-cancel-btn">Abbrechen</button>
+                <button class="btn btn-primary" id="confirm-ok-btn">Bestätigen</button>
             </div>
         </div>
     </div>
@@ -1114,7 +1114,7 @@ HTML_TEMPLATE = """
         let currentCalendarDate = new Date();
         let calendarFilterFuture = true;
 
-        // Confirm Modal
+        // Confirm Modal (für Drag & Drop)
         let confirmResolve = null;
 
         function showConfirm(title, message) {
@@ -1123,15 +1123,34 @@ HTML_TEMPLATE = """
                 document.getElementById('confirm-title').textContent = title;
                 document.getElementById('confirm-message').textContent = message;
                 document.getElementById('confirm-modal').style.display = 'flex';
+                
+                // Event Listeners für Buttons
+                const okBtn = document.getElementById('confirm-ok-btn');
+                const cancelBtn = document.getElementById('confirm-cancel-btn');
+                
+                const handleOk = () => {
+                    document.getElementById('confirm-modal').style.display = 'none';
+                    if (confirmResolve) {
+                        confirmResolve(true);
+                        confirmResolve = null;
+                    }
+                    okBtn.removeEventListener('click', handleOk);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                };
+                
+                const handleCancel = () => {
+                    document.getElementById('confirm-modal').style.display = 'none';
+                    if (confirmResolve) {
+                        confirmResolve(false);
+                        confirmResolve = null;
+                    }
+                    okBtn.removeEventListener('click', handleOk);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                };
+                
+                okBtn.addEventListener('click', handleOk);
+                cancelBtn.addEventListener('click', handleCancel);
             });
-        }
-
-        function closeConfirmModal(confirmed) {
-            document.getElementById('confirm-modal').style.display = 'none';
-            if (confirmResolve) {
-                confirmResolve(confirmed);
-                confirmResolve = null;
-            }
         }
 
         // Undo/Redo
@@ -1359,7 +1378,7 @@ HTML_TEMPLATE = """
                 return;
             }
 
-            showConfirmation('Event wirklich löschen?', async () => {
+            showDeleteConfirmation('Event wirklich löschen?', async () => {
                 const response = await fetch('/delete_event', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1464,7 +1483,7 @@ HTML_TEMPLATE = """
                 return;
             }
 
-            showConfirmation('Private Veranstaltung wirklich löschen?', async () => {
+            showDeleteConfirmation('Private Veranstaltung wirklich löschen?', async () => {
                 const response = await fetch('/delete_blocked', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1559,7 +1578,7 @@ HTML_TEMPLATE = """
                 return;
             }
 
-            showConfirmation('Gallery-Eintrag wirklich löschen?', async () => {
+            showDeleteConfirmation('Gallery-Eintrag wirklich löschen?', async () => {
                 const response = await fetch('/delete_gallery', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -2121,41 +2140,41 @@ HTML_TEMPLATE = """
         }
 
 
-        // Custom Confirmation Dialog
-        let confirmCallback = null;
+        // Custom Delete Confirmation Dialog
+        let deleteConfirmCallback = null;
 
-        function showConfirmation(message, onConfirm) {
+        function showDeleteConfirmation(message, onConfirm) {
             document.getElementById('confirmMessage').textContent = message;
             document.getElementById('confirmModal').classList.add('active');
-            confirmCallback = onConfirm;
+            deleteConfirmCallback = onConfirm;
         }
 
-        function closeConfirmModal() {
+        function closeDeleteConfirmModal() {
             document.getElementById('confirmModal').classList.remove('active');
-            confirmCallback = null;
+            deleteConfirmCallback = null;
         }
 
-        function handleConfirmKeyPress(e) {
-            if (e.key === 'Enter') {
+        function handleDeleteConfirmKeyPress(e) {
+            if (e.key === 'Enter' && document.getElementById('confirmModal').classList.contains('active')) {
                 e.preventDefault();
-                executeConfirm();
-            } else if (e.key === 'Escape') {
+                executeDeleteConfirm();
+            } else if (e.key === 'Escape' && document.getElementById('confirmModal').classList.contains('active')) {
                 e.preventDefault();
-                closeConfirmModal();
+                closeDeleteConfirmModal();
             }
         }
 
-        function executeConfirm() {
-            if (confirmCallback) {
-                confirmCallback();
+        function executeDeleteConfirm() {
+            if (deleteConfirmCallback) {
+                deleteConfirmCallback();
             }
-            closeConfirmModal();
+            closeDeleteConfirmModal();
         }
 
         // Event Listener für Bestätigen-Button - wird nach dem DOM-Load gesetzt
         window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('confirmButton').addEventListener('click', executeConfirm);
-            document.addEventListener('keydown', handleConfirmKeyPress);
+            document.getElementById('confirmButton').addEventListener('click', executeDeleteConfirm);
+            document.addEventListener('keydown', handleDeleteConfirmKeyPress);
         });
 
 
@@ -2488,7 +2507,7 @@ def create_backup():
         return jsonify({'success': False, 'error': 'Kein Projektpfad gesetzt'})
 
     try:
-        timestamp = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         memory_file = io.BytesIO()
 
         with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
